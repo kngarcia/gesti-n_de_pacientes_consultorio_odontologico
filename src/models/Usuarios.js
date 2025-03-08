@@ -16,9 +16,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       unique: "correo"
     },
-    'contraseña': {
+    contrasena: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
+      field: 'contraseña'
     },
     rol: {
       type: DataTypes.ENUM('admin','auxiliar'),

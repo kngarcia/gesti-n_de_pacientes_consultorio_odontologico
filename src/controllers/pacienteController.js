@@ -51,7 +51,7 @@ const actualizarPaciente = async (req, res) => {
 // Eliminar un paciente
 const eliminarPaciente = async (req, res) => {
   try {
-    const paciente = await Paciente.findByPk(req.params.id);
+    const paciente = await models.Pacientes.findByPk(req.params.id);
     if (!paciente) {
       return res.status(404).json({ mensaje: "Paciente no encontrado" });
     }
