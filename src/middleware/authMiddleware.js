@@ -18,15 +18,23 @@ const verificarToken = (req, res, next) => {
   });
 };
 
-const verificarRol = (rolRequerido) => {
+const verificarRol = (rolesPermitidos) => {
   return (req, res, next) => {
     // Depura: muestra lo que tiene req.usuario
     console.log("Rol del usuario:", req.usuario ? req.usuario.rol : "No definido");
-    
-    if (!req.usuario || req.usuario.rol !== rolRequerido) {
-      return res.status(403).json({ mensaje: "No tienes permiso para acceder a esat ruta" });
+
+    // Si rolesPermitidos es un array, verifica si el rol del usuario está en el array
+    if (Array.isArray(rolesPermitidos)) {
+      if (!req.usuario || !rolesPermitidos.includes(req.usuario.rol)) {
+        return res.status(403).json({ mensaje: "No tienes permiso para acceder a esta ruta" });
+      }
     }
-    next();
+    // Si rolesPermitidos es un string, verifica si el rol del usuario coincide
+    else if (!req.usuario || req.usuario.rol !== rolesPermitidos) {
+      return res.status(403).json({ mensaje: "No tienes permiso para acceder a esta ruta" });
+    }
+
+    next(); // Si el rol es válido, continúa con la siguiente función
   };
 };
 

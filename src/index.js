@@ -17,11 +17,13 @@ conectarDB();
 // 🔹 Importamos rutas
 const pacientesRoutes = require("./routes/pacientes");
 const usuarioRoutes = require("./routes/usuarios");
+const citasRoutes = require("./routes/citas");
 const authRoutes = require("./routes/authRoutes"); // Para autenticación
 
 // 🔹 Usamos las rutas
 app.use("/api/pacientes", pacientesRoutes);
 app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/citas", citasRoutes);
 app.use("/api/auth", authRoutes); // Endpoint para autenticación
 
 

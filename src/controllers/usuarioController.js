@@ -26,8 +26,8 @@ const obtenerUsuarioPorId = async (req, res) => {
 // Crear un usuario
 const crearUsuario = async (req, res) => {
   try {
-    const { nombre, correo, contraseña, rol } = req.body;
-    const nuevoUsuario = await models.Usuarios.create({ nombre, correo, contraseña, rol });
+    const { nombre, correo, contrasena, rol } = req.body;
+    const nuevoUsuario = await models.Usuarios.create({ nombre, correo, contrasena, rol });
     res.status(201).json(nuevoUsuario);
   } catch (error) {
     res.status(500).json({ mensaje: "Error al crear usuario", error });

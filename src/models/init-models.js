@@ -140,12 +140,12 @@ function initModels(sequelize) {
   HistoriaClinica.hasMany(PlanTratamientoOdontologico, { as: "PlanTratamientoOdontologicos", foreignKey: "id_historia"});
   PronosticoGeneral.belongsTo(HistoriaClinica, { as: "id_historia_HistoriaClinica", foreignKey: "id_historia"});
   HistoriaClinica.hasMany(PronosticoGeneral, { as: "PronosticoGenerals", foreignKey: "id_historia"});
-  Citas.belongsTo(Pacientes, { as: "id_paciente_Paciente", foreignKey: "id_paciente"});
-  Pacientes.hasMany(Citas, { as: "Cita", foreignKey: "id_paciente"});
+  Citas.belongsTo(Pacientes, { as: "Paciente", foreignKey: "id_paciente"});
+  Pacientes.hasMany(Citas, { as: "Citas", foreignKey: "id_paciente"});
   HistoriaClinica.belongsTo(Pacientes, { as: "id_paciente_Paciente", foreignKey: "id_paciente"});
   Pacientes.hasOne(HistoriaClinica, { as: "HistoriaClinica", foreignKey: "id_paciente"});
-  Citas.belongsTo(Usuarios, { as: "id_auxiliar_Usuario", foreignKey: "id_auxiliar"});
-  Usuarios.hasMany(Citas, { as: "Cita", foreignKey: "id_auxiliar"});
+  Citas.belongsTo(Usuarios, { as: "Auxiliar", foreignKey: "id_auxiliar"});
+  Usuarios.hasMany(Citas, { as: "Citas", foreignKey: "id_auxiliar"});
   Pacientes.belongsTo(Usuarios, { as: "id_doctora_Usuario", foreignKey: "id_doctora"});
   Usuarios.hasMany(Pacientes, { as: "Pacientes", foreignKey: "id_doctora"});
 
