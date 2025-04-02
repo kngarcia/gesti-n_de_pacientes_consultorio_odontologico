@@ -1,0 +1,51 @@
+/frontend-project/frontend-project/src/styles/CrearHistoria.css
+
+/* This file contains the styles specific to the CrearHistoria component. */
+
+/* General layout for the CrearHistoria component */
+.crear-historia-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+.crear-historia-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Form element styling */
+.crear-historia-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Input field styling */
+.crear-historia-input {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Button styling */
+.crear-historia-button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.crear-historia-button:hover {
+    background-color: #0056b3;
+}

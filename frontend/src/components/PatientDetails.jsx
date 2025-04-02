@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import Spinner from './Spinner';
 import ErrorMessage from './ErrorMessage';
-
+import { useNavigate } from 'react-router-dom';
+import CrearHistoria from './CrearHistoria';
 const PatientDetails = ({ patientId, onBack, onPatientUpdated, onPatientDeleted }) => {
-  // Estados del componente
+  const navigate = useNavigate();
+    // Estados del componente
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [mostrarCrearHistoria, setMostrarCrearHistoria] = useState(false);
   const [formData, setFormData] = useState({
     nombre_completo: '',
     documento_identidad: '',
@@ -158,6 +161,9 @@ const PatientDetails = ({ patientId, onBack, onPatientUpdated, onPatientDeleted 
   if (loading) return <Spinner />;
   if (error) return <ErrorMessage message={error} onRetry={() => window.location.reload()} />;
   if (!patient) return <div className="p-4 text-red-500">Paciente no encontrado</div>;
+  if (mostrarCrearHistoria) {
+    return <CrearHistoria onBack={() => setMostrarCrearHistoria(false)} />;
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -172,13 +178,13 @@ const PatientDetails = ({ patientId, onBack, onPatientUpdated, onPatientDeleted 
         
         <div className="flex space-x-2">
           <button
-            onClick={() => navigate(`CrearHistoria.jsx`)}
+            onClick={() => setMostrarCrearHistoria(true)} 
             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
           >
             Crear Historia
           </button>
           <button
-            onClick={() => navigate(`VerHistoria.jsx`)}
+            onClick={() => navigate('./VerHistoria')}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
           >
             Ver Historia

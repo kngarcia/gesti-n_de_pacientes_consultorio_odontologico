@@ -1,0 +1,34 @@
+{
+  "name": "frontend-project",
+  "version": "1.0.0",
+  "description": "A React application for managing patient histories in a dental clinic.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "keywords": [
+    "react",
+    "frontend",
+    "patient management",
+    "dental clinic"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.14.0",
+    "babel-eslint": "^10.1.0"
+  },
+  "homepage": "http://yourhomepage.com",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/yourusername/frontend-project.git"
+  }
+}
