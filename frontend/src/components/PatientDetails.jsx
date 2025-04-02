@@ -171,7 +171,21 @@ const PatientDetails = ({ patientId, onBack, onPatientUpdated, onPatientDeleted 
         </button>
         
         <div className="flex space-x-2">
+          <button
+            onClick={() => navigate(`CrearHistoria.jsx`)}
+            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+          >
+            Crear Historia
+          </button>
+          <button
+            onClick={() => navigate(`VerHistoria.jsx`)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          >
+            Ver Historia
+          </button>
+
           {!isEditing && (
+            
             <button
               onClick={() => setIsEditing(true)}
               className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
