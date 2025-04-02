@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import Spinner from './Spinner';
 import ErrorMessage from './ErrorMessage';
+import { useNavigate } from "react-router-dom";
+import FrecuenciaCepillado from './FrecuenciaCepillado';
 
-const CrearHistoria = ({ onBack, onHistoriaCreated }) => {
+const AntecedentesHistoria = ({ onBack, onHistoriaCreated }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const [mostrarFrecuenciaCepillado, setMostrarFrecuenciaCepillado] = useState(false);
   const [formData, setFormData] = useState({
     antecedentesOdontologicos: {
       bruxismo: 'No',
@@ -87,7 +91,9 @@ const CrearHistoria = ({ onBack, onHistoriaCreated }) => {
       },
     }));
   };
-
+  const handleSiguiente = () => {
+    navigate("/FrecuenciaCepillado");
+  };
   const handleSubmit = async () => {
     try {
       setLoading(true);
@@ -119,6 +125,9 @@ const CrearHistoria = ({ onBack, onHistoriaCreated }) => {
 
   if (loading) return <Spinner />;
   if (error) return <ErrorMessage message={error} onRetry={handleSubmit} />;
+  if (mostrarFrecuenciaCepillado) {
+    return <FrecuenciaCepillado onBack={() => setMostrarFrecuenciaCepillado(false)} />;
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-screen">
@@ -129,7 +138,7 @@ const CrearHistoria = ({ onBack, onHistoriaCreated }) => {
         >
           ← Volver
         </button>
-        <h2 className="text-2xl font-bold text-gray-800">Crear Historia Clínica</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Antesedentes de la Historia Clínica</h2>
       </div>
   
       <form className="space-y-6">
@@ -190,10 +199,10 @@ const CrearHistoria = ({ onBack, onHistoriaCreated }) => {
           </button>
           <button
             type="button"
-            onClick={handleSubmit}
+            onClick={() => setMostrarFrecuenciaCepillado(true)}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
           >
-            Crear Historia
+            Siguiente
           </button>
         </div>
       </form>
@@ -202,4 +211,4 @@ const CrearHistoria = ({ onBack, onHistoriaCreated }) => {
   
 }  
 
-export default CrearHistoria;
+export default AntecedentesHistoria;

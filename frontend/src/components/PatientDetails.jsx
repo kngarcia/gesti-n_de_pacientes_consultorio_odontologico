@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import Spinner from './Spinner';
 import ErrorMessage from './ErrorMessage';
 import { useNavigate } from 'react-router-dom';
-import CrearHistoria from './CrearHistoria';
+import AntecedentesHistoria from './AntecedentesHistoria';
+
 const PatientDetails = ({ patientId, onBack, onPatientUpdated, onPatientDeleted }) => {
   const navigate = useNavigate();
     // Estados del componente
@@ -162,7 +163,7 @@ const PatientDetails = ({ patientId, onBack, onPatientUpdated, onPatientDeleted 
   if (error) return <ErrorMessage message={error} onRetry={() => window.location.reload()} />;
   if (!patient) return <div className="p-4 text-red-500">Paciente no encontrado</div>;
   if (mostrarCrearHistoria) {
-    return <CrearHistoria onBack={() => setMostrarCrearHistoria(false)} />;
+    return <AntecedentesHistoria onBack={() => setMostrarCrearHistoria(false)} />;
   }
 
   return (
