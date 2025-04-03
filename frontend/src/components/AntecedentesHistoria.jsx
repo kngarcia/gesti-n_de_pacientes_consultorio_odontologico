@@ -138,7 +138,9 @@ const AntecedentesHistoria = ({ onBack, onHistoriaCreated }) => {
         >
           ← Volver
         </button>
-        <h2 className="text-2xl font-bold text-gray-800">Antesedentes de la Historia Clínica</h2>
+        <h2 className="text-2xl font-bold text-gray-800">
+          1.Antecedentes de la Historia Clínica
+        </h2>
       </div>
   
       <form className="space-y-6">

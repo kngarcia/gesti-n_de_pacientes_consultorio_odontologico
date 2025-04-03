@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import ExamenClinico from './ExamenClinico';
+import { useNavigate } from "react-router-dom";
 
 const FrecuenciaCepillado = ({ onBack }) => {
+  const navigate = useNavigate();
+  const [MostrarExamenClinico, setMostrarExamenClinico] = useState(false);
   const [formData, setFormData] = useState({
     cepillado_veces_dia: "1",  // Valor inicial válido
     ceda_detal_veces_al_dia: "1",
@@ -18,18 +22,21 @@ const FrecuenciaCepillado = ({ onBack }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
-
+    
     // Validación básica
     if (!formData.ultima_visita_odontologo) {
       setError("La fecha de última visita es obligatoria");
       return;
     }
-
+    
     setIsSubmitting(true);
-
+    
     
   };
-
+  
+  if (MostrarExamenClinico) {
+    return <ExamenClinico onBack={() => setMostrarExamenClinico(false)} />;
+  }
   return (
     <div className="bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-screen">
       <div className="flex justify-between items-start mb-6">
@@ -40,7 +47,7 @@ const FrecuenciaCepillado = ({ onBack }) => {
           ← Volver
         </button>
         <h2 className="text-2xl font-bold text-gray-800">
-          3. Frecuencia del Cepillado
+          2. Frecuencia del Cepillado
         </h2>
       </div>
 
@@ -134,14 +141,13 @@ const FrecuenciaCepillado = ({ onBack }) => {
             Atrás
           </button>
           <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`px-4 py-2 ${
-              isSubmitting ? "bg-gray-400" : "bg-green-500"
-            } text-white rounded-lg transition-colors`}
+            type="button"
+            onClick={() => setMostrarExamenClinico(true)}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
           >
-            {isSubmitting ? "Guardando..." : "Guardar"}
+            Siguiente
           </button>
+          
         </div>
       </form>
     </div>
