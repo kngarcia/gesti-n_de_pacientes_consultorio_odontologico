@@ -1,41 +1,33 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 
-const FrecuenciaCepillado = () => {
-  const [frecuencias, setFrecuencias] = useState([]);
+const FrecuenciaCepillado = ({ onBack }) => {
   const [formData, setFormData] = useState({
-    id_historia: "",
-    cepillado_veces_dia: "0",
-    ceda_detal_veces_al_dia: "0",
+    cepillado_veces_dia: "1",  // Valor inicial válido
+    ceda_detal_veces_al_dia: "1",
     ultima_visita_odontologo: "",
     observaciones: "",
   });
 
-  useEffect(() => {
-    fetchFrecuencias();
-  }, []);
-
-  const fetchFrecuencias = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/frecuencia");
-      setFrecuencias(response.data);
-    } catch (error) {
-      console.error("Error al obtener las frecuencias", error);
-    }
-  };
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await axios.post("http://localhost:5000/frecuencia", formData);
-      fetchFrecuencias();
-    } catch (error) {
-      console.error("Error al enviar el formulario", error);
+    setError("");
+
+    // Validación básica
+    if (!formData.ultima_visita_odontologo) {
+      setError("La fecha de última visita es obligatoria");
+      return;
     }
+
+    setIsSubmitting(true);
+
+    
   };
 
   return (
@@ -52,19 +44,27 @@ const FrecuenciaCepillado = () => {
         </h2>
       </div>
 
-      <form className="space-y-8">
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
+
+      <form className="space-y-8" onSubmit={handleSubmit}>
         {/* Cepillado Cuántas Veces */}
         <div>
           <label className="block text-gray-700 font-medium mb-2">
-            ¿Cepillado cuántas veces al día?
+            ¿Cepillado cuántas veces al día? *
           </label>
           <div className="flex flex-wrap gap-4">
             {[1, 2, 3, 4, "5 o más"].map((value) => (
               <label key={value} className="flex items-center space-x-2">
                 <input
                   type="radio"
-                  name="cepillado"
+                  name="cepillado_veces_dia"
                   value={value}
+                  checked={formData.cepillado_veces_dia === value.toString()}
+                  onChange={handleChange}
                   className="form-radio"
                 />
                 <span>{value}</span>
@@ -83,8 +83,10 @@ const FrecuenciaCepillado = () => {
               <label key={value} className="flex items-center space-x-2">
                 <input
                   type="radio"
-                  name="ceda_dental"
+                  name="ceda_detal_veces_al_dia"
                   value={value}
+                  checked={formData.ceda_detal_veces_al_dia === value.toString()}
+                  onChange={handleChange}
                   className="form-radio"
                 />
                 <span>{value}</span>
@@ -96,12 +98,15 @@ const FrecuenciaCepillado = () => {
         {/* Última Visita al Odontólogo */}
         <div>
           <label className="block text-gray-700 font-medium mb-2">
-            ¿Última visita al odontólogo?
+            ¿Última visita al odontólogo? *
           </label>
           <input
             type="date"
-            name="ultima_visita"
+            name="ultima_visita_odontologo"
+            value={formData.ultima_visita_odontologo}
+            onChange={handleChange}
             className="border border-gray-300 rounded px-3 py-1 w-full"
+            required
           />
         </div>
 
@@ -112,6 +117,8 @@ const FrecuenciaCepillado = () => {
           </label>
           <textarea
             name="observaciones"
+            value={formData.observaciones}
+            onChange={handleChange}
             rows={4}
             className="border border-gray-300 rounded px-3 py-2 w-full"
             placeholder="Ingrese observaciones relevantes..."
@@ -128,9 +135,12 @@ const FrecuenciaCepillado = () => {
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            disabled={isSubmitting}
+            className={`px-4 py-2 ${
+              isSubmitting ? "bg-gray-400" : "bg-green-500"
+            } text-white rounded-lg transition-colors`}
           >
-            Guardar
+            {isSubmitting ? "Guardando..." : "Guardar"}
           </button>
         </div>
       </form>
