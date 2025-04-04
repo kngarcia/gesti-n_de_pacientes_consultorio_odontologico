@@ -197,7 +197,7 @@ const AntecedentesHistoria = ({ onBack, onHistoriaCreated }) => {
             onClick={onBack}
             className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
           >
-            Cancelar
+            Atrás
           </button>
           <button
             type="button"
