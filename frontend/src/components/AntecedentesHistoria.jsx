@@ -4,6 +4,86 @@ import ErrorMessage from './ErrorMessage';
 import { useNavigate } from "react-router-dom";
 import FrecuenciaCepillado from './FrecuenciaCepillado';
 
+// Diccionario de etiquetas para las secciones
+const sectionLabels = {
+  antecedentesOdontologicos: "ANTECEDENTES ODONTOLÓGICOS",
+  antecedentesPatologicos: "ANTECEDENTES PATOLÓGICOS",
+  antecedentesToxicologicos: "ANTECEDENTES TOXICOLÓGICOS", // Nota: Si prefieres cambiar la clave en el estado, recuerda ajustar también el backend.
+  antecedentesHospitalarios: "ANTECEDENTES HOSPITALARIOS",
+  antecedentesFamiliares: "ANTECEDENTES  FAMILIARES",
+  antecedentesGinecoobtetricos: "ANTECEDENTES  GINECOOBTETRICOS", // Nota: "Ginecoobtetricos" a "Ginecoobstétricos"
+  antecedentesEstomatologicos: "ANTECEDENTES  ESTOMATOLÓGICOS",
+};
+
+// Diccionario de etiquetas para cada campo
+const fieldLabels = {
+  // Antecedentes Odontológicos
+  bruxismo: "Bruxismo",
+  onicofagia: "Onicofagia",
+  mordedura_labio_inferior_superior: "Mordedura de labio inferior/superior",
+  succion_digital: "Succión digital",
+  biberon: "Biberón",
+  deglucion_atipica: "Deglución atípica",
+  respirador_bucal: "Respirador bucal",
+
+  // Antecedentes Patológicos
+  hiv: "VIH",
+  hepatitis: "Hepatitis",
+  fiebre_reumatica: "Fiebre reumática",
+  diabetes: "Diabetes",
+  ulcera_gastrica_o_hernia_hiatal: "Úlcera gástrica o hernia hiatal",
+  epilepsia: "Epilepsia",
+  presion_arterial_alta: "Presión arterial alta",
+  convulsiones: "Convulsiones",
+  mareos_frecuentes: "Mareos frecuentes",
+  fracturas_accidentes: "Fracturas o accidentes",
+  cicatriza_normalmente: "Cicatriza normalmente",
+  infarto_miocardio: "Infarto al miocardio",
+  reemplazo_valvulas: "Reemplazo de válvulas",
+  perdida_conocimiento: "Pérdida de conocimiento",
+  perdida_peso: "Pérdida de peso",
+  alergias: "Alergias",
+  descripcion_alergias: "Descripción de alergias",
+  otros: "Otros",
+  descripcion_otros: "Descripción de otros",
+
+  // Antecedentes Toxicológicos
+  fuma: "Fuma",
+  ingiere_alcohol: "Ingiere alcohol",
+  usa_drogas: "Usa drogas",
+  alergico_anestesia_o_vasoconstrictores: "Alérgico(a) a anestesia o vasoconstrictores",
+  toma_medicamentos_actualmente: "Toma medicamentos actualmente",
+  alergico_algun_medicamento: "Alérgico(a) a algún medicamento",
+  // Nota: Se reutiliza "otros" y "descripcion_otros". Si se requiere diferenciarlos, se deben renombrar en el estado.
+
+  // Antecedentes Hospitalarios
+  transfusiones: "Transfusiones",
+  hospitalizado: "Hospitalizado(a)",
+  razon_hospitalizacion: "Razón de hospitalización",
+  operado: "Operado(a)",
+  descripcion_operacion: "Descripción de operación",
+
+  // Antecedentes Familiares
+  afecciones_cardiacas: "Afecciones cardíacas",
+  hipertension: "Hipertensión",
+  cancer: "Cáncer",
+  tuberculosis: "Tuberculosis",
+  especificacion: "Especificación",
+
+  // Antecedentes Ginecoobstétricos
+  toma_anticonseptivos: "Toma anticonceptivos",
+  embarazada: "Embarazada",
+  meses_embarazo: "Meses de embarazo",
+  reemplazo_cadera_o_fractura_femur: "Reemplazo de cadera o fractura de fémur",
+
+  // Antecedentes Estomatológicos
+  luxacion_o_fractura_mandibula: "Luxación o fractura de mandíbula",
+  amigdalitis: "Amigdalitis",
+  infecciones_orales_a_repeticion: "Infecciones orales a repetición",
+  mal_aliento: "Mal aliento",
+  fuegos: "Fuegos (aftas o herpes)",
+};
+
 const AntecedentesHistoria = ({ onBack, onHistoriaCreated }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -64,7 +144,7 @@ const AntecedentesHistoria = ({ onBack, onHistoriaCreated }) => {
       epilepsia: 'No',
       cancer: 'No',
       tuberculosis: 'No',
-      otras: 'No',
+      otros: 'No',
       especificacion: '',
     },
     antecedentesGinecoobtetricos: {
@@ -91,9 +171,11 @@ const AntecedentesHistoria = ({ onBack, onHistoriaCreated }) => {
       },
     }));
   };
+
   const handleSiguiente = () => {
     navigate("/FrecuenciaCepillado");
   };
+
   const handleSubmit = async () => {
     try {
       setLoading(true);
@@ -139,7 +221,7 @@ const AntecedentesHistoria = ({ onBack, onHistoriaCreated }) => {
           ← Volver
         </button>
         <h2 className="text-2xl font-bold text-gray-800">
-          1.Antecedentes de la Historia Clínica
+          Antecedentes de la Historia Clínica
         </h2>
       </div>
   
@@ -147,13 +229,17 @@ const AntecedentesHistoria = ({ onBack, onHistoriaCreated }) => {
         {Object.entries(formData).map(([section, fields]) => (
           <div key={section} className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-700 mb-3">
-              {section.replace(/([A-Z])/g, ' $1').trim()}
+              {sectionLabels[section] || section}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.keys(fields).map((key) => (
                 <div key={key}>
-                  <label className="text-sm text-gray-500">{key.replace(/_/g, ' ')}</label>
-                  {key.startsWith('descripcion') || key.includes('razon') || key.includes('especificacion') ? (
+                  <label className="text-sm text-gray-500">
+                    {fieldLabels[key] || key.replace(/_/g, ' ')}
+                  </label>
+                  {key.startsWith('descripcion') ||
+                   key.includes('razon') ||
+                   key.includes('especificacion') ? (
                     <textarea
                       value={fields[key]}
                       onChange={(e) => handleInputChange(section, key, e.target.value)}
@@ -210,7 +296,6 @@ const AntecedentesHistoria = ({ onBack, onHistoriaCreated }) => {
       </form>
     </div>
   );
-  
-}  
+};
 
 export default AntecedentesHistoria;

@@ -1,40 +1,50 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ExamenEstomatologico from './ExamenEstomatologico'
+import ExamenEstomatologico from './ExamenEstomatologico';
 
 const ExamenOral = ({ onBack }) => {
   const navigate = useNavigate();
   const [mostrarExamenEstomatologico, setMostrarExamenEstomatologico] = useState(false);
 
+  // Estado para los datos de examen extra e intraoral
   const [formData, setFormData] = useState({
     adenopatias: 'No',
     derecho: 'No',
     izquierdo: 'No',
-    sintomatologia: '', // Un único campo para el grupo de radio
+    sintomatologia: '', // Radio (sintomático / asintomático)
+    observaciones_intraoral: '', // Observaciones adicionales
+    otros_adenopatias: '' // NUEVO: Indicar otro tipo de adenopatías
   });
 
   const [intraOralData, setIntraOralData] = useState({
-    textura_punteojo: 'No',
+    textura_punteado_naranja: 'No',
     textura_llisa: 'No',
-    textura_maravia: 'No',
+    textura_naranja: 'No',
+
     tejidos_duros_atriston: 'No',
-    tejidos_duros_ambason: 'No',
+    tejidos_duros_abrasion: 'No',
     tejidos_duros_erosion: 'No',
     tejidos_duros_malposicion: 'No',
+    tejidos_duros_diastema: 'No',
+    tejidos_duros_des_line_m_dental: 'No',
+    tejidos_duros_alteracion_tamano: 'No',
+    tejidos_duros_alteracion_forma: 'No',
+    tejidos_duros_alteracion_numero: 'No',
+    tejidos_duros_facetas_desgaste: 'No',
+    tejidos_duros_manchas: 'No',
+
+    mucosas_rosadas: 'No',
+    mucosas_rojas: 'No',
+
     encias_sana: 'No',
     encias_enrojecida: 'No',
     encias_inflamada: 'No',
     encias_sangrante: 'No',
-    diastema_desune: 'No',
-    diastema_tamano: 'No',
-    diastema_forma: 'No',
-    mucosas_rosadas: 'No',
-    mucosas_rojas: 'No',
-    alteracion_facetas: 'No',
-    alteracion_manchas: 'No',
+
     observaciones: ''
   });
 
+  // Manejadores de cambio
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -43,6 +53,7 @@ const ExamenOral = ({ onBack }) => {
     setIntraOralData({ ...intraOralData, [e.target.name]: e.target.value });
   };
 
+  // Función genérica para crear secciones con radio buttons
   const createSection = (title, items) => (
     <div className="mb-6">
       <h3 className="text-lg font-semibold text-gray-800 mb-3">{title}</h3>
@@ -80,12 +91,15 @@ const ExamenOral = ({ onBack }) => {
     </div>
   );
 
+  // Manejo de envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
     const allData = { ...formData, ...intraOralData };
     console.log('Datos enviados:', allData);
-    // Lógica para enviar a tu API
+    // Aquí podrías enviar a tu API o backend
   };
+
+  // Renderizado condicional para mostrar ExamenEstomatologico
   if (mostrarExamenEstomatologico) {
     return <ExamenEstomatologico onBack={() => setMostrarExamenEstomatologico(false)} />;
   }
@@ -110,26 +124,47 @@ const ExamenOral = ({ onBack }) => {
         <div className="border-b pb-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Examen ExtraOral</h3>
           <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="text-gray-700">Adenopatías</span>
-              <div className="flex gap-4">
-                {['Si', 'No'].map((opcion) => (
-                  <label key={opcion} className="flex items-center space-x-1 text-gray-700">
-                    <input
-                      type="radio"
-                      name="adenopatias"
-                      value={opcion}
-                      checked={formData.adenopatias === opcion}
-                      onChange={handleChange}
-                      className="form-radio h-5 w-5 border-2 border-gray-300 text-blue-600"
-                    />
-                    <span className="text-sm">{opcion}</span>
-                  </label>
-                ))}
+            {/* Adenopatías */}
+            <div className="flex flex-col gap-4 p-3 bg-gray-50 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700">Adenopatías</span>
+                <div className="flex gap-4">
+                  {['Si', 'No'].map((opcion) => (
+                    <label key={opcion} className="flex items-center space-x-1 text-gray-700">
+                      <input
+                        type="radio"
+                        name="adenopatias"
+                        value={opcion}
+                        checked={formData.adenopatias === opcion}
+                        onChange={handleChange}
+                        className="form-radio h-5 w-5 border-2 border-gray-300 text-blue-600"
+                      />
+                      <span className="text-sm">{opcion}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              {/* Nuevo campo para indicar otro tipo de adenopatías */}
+              <div className="mt-4">
+                <label
+                  htmlFor="otros_adenopatias"
+                  className="block text-gray-700 mb-1 text-sm font-medium"
+                >
+                  Otro tipo de adenopatías (especifique)
+                </label>
+                <textarea
+                  id="otros_adenopatias"
+                  name="otros_adenopatias"
+                  value={formData.otros_adenopatias}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  rows="2"
+                  placeholder="Ingrese otros tipos de adenopatías..."
+                ></textarea>
               </div>
             </div>
 
-            {/* Datos adicionales siempre visibles */}
+            {/* Localización y Sintomatología */}
             <div className="ml-4 space-y-4">
               <div className="space-y-3 p-4">
                 <div className="flex justify-between items-center">
@@ -156,7 +191,7 @@ const ExamenOral = ({ onBack }) => {
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Sintomatología</span>
                   <div className="flex gap-4">
@@ -167,20 +202,32 @@ const ExamenOral = ({ onBack }) => {
                           name="sintomatologia"
                           value={tipo}
                           checked={formData.sintomatologia === tipo}
-                          onChange={(e) =>
-                            handleChange({
-                              target: {
-                                name: 'sintomatologia',
-                                value: e.target.value
-                              }
-                            })
-                          }
+                          onChange={handleChange}
                           className="form-radio h-5 w-5 border-2 border-gray-300 text-blue-600"
                         />
                         <span className="capitalize text-sm">{tipo}</span>
                       </label>
                     ))}
                   </div>
+                </div>
+
+                {/* Observaciones de Sintomatología */}
+                <div className="mt-4">
+                  <label
+                    htmlFor="observaciones_sintomatologia"
+                    className="block text-gray-700 mb-1 text-sm font-medium"
+                  >
+                    Observaciones
+                  </label>
+                  <textarea
+                    id="observaciones_sintomatologia"
+                    name="observaciones_intraoral"
+                    value={formData.observaciones_intraoral}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    rows="2"
+                    placeholder="Detalles adicionales..."
+                  ></textarea>
                 </div>
               </div>
             </div>
@@ -190,22 +237,22 @@ const ExamenOral = ({ onBack }) => {
         {/* Sección IntraOral */}
         <div className="pt-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-6">Examen IntraOral</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Columna Izquierda */}
             <div className="space-y-6">
-              {createSection("Textura", [
-                ['Punteojo Maravía', 'textura_punteojo'],
-                ['Lilás', 'textura_llisa'],
-                ['Maravía', 'textura_maravia']
-              ])}
-
               {createSection("Encias", [
                 ['Sana', 'encias_sana'],
                 ['Enrojecida', 'encias_enrojecida'],
                 ['Inflamada', 'encias_inflamada'],
                 ['Sangrante', 'encias_sangrante']
               ])}
+              {createSection("Textura", [
+                ['Punteado Naranja', 'textura_punteado_naranja'],
+                ['Lilás', 'textura_llisa'],
+                ['Naranja', 'textura_naranja']
+              ])}
+
 
               {createSection("Mucosas", [
                 ['Rosadas', 'mucosas_rosadas'],
@@ -217,25 +264,19 @@ const ExamenOral = ({ onBack }) => {
             <div className="space-y-6">
               {createSection("Tejidos Duros", [
                 ['Atristión', 'tejidos_duros_atriston'],
-                ['Ambasión', 'tejidos_duros_ambason'],
+                ['Abrasión', 'tejidos_duros_abrasion'],
                 ['Erosión', 'tejidos_duros_erosion'],
-                ['Mal Posición', 'tejidos_duros_malposicion']
-              ])}
-
-              {createSection("Diastema", [
-                ['Des. Une, M. Dejital', 'diastema_desune'],
-                ['Alteración Tamaño', 'diastema_tamano'],
-                ['Alteración Forma', 'diastema_forma']
-              ])}
-
-              {createSection("Alteración Número", [
-                ['Facetas de Desgaste', 'alteracion_facetas'],
-                ['Manchas', 'alteracion_manchas']
+                ['Mal Posición', 'tejidos_duros_malposicion'],
+                ['Des. Línea M Dental', 'tejidos_duros_des_line_m_dental'],
+                ['Alteración Tamaño', 'tejidos_duros_alteracion_tamano'],
+                ['Alteración Forma', 'tejidos_duros_alteracion_forma'],
+                ['Facetas de Desgaste', 'tejidos_duros_facetas_desgaste'],
+                ['Manchas', 'tejidos_duros_manchas']
               ])}
             </div>
           </div>
 
-          {/* Nuevo campo de Observaciones */}
+          {/* Observaciones IntraOrales */}
           <div className="mt-6">
             <label className="block text-gray-800 font-semibold mb-2" htmlFor="observaciones">
               Observaciones

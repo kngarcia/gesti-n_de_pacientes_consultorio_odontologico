@@ -5,9 +5,11 @@ import PronosticoAlteraciones from './PronosticoAlteraciones';
 const ExamenEstomatologico = ({ onBack }) => {
   const navigate = useNavigate();
   const [MostrarPronosticoAlteraciones, setMostrarPronosticoAlteraciones] = useState(false);
+
   const [formData, setFormData] = useState({
     // Músculos masticadores
-    musculosMasticadores: '', // sintomatico / asintomatico
+    musculosMasticadores: '', // sintomático / asintomático
+    observaciones_musculosMasticadores: '', // Observaciones
 
     // Labios
     labios_herpes: 'No',
@@ -103,6 +105,8 @@ const ExamenEstomatologico = ({ onBack }) => {
     console.log('Datos Examen Estomatológico:', formData);
     // Aquí tu lógica de guardado o envío
   };
+
+  // Renderizado condicional para mostrar PronosticoAlteraciones
   if (MostrarPronosticoAlteraciones) {
     return <PronosticoAlteraciones onBack={() => setMostrarPronosticoAlteraciones(false)} />;
   }
@@ -138,7 +142,7 @@ const ExamenEstomatologico = ({ onBack }) => {
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
             Músculos Masticadores
           </h3>
-          <div className="flex gap-6 flex-wrap items-center">
+          <div className="flex gap-6 flex-wrap items-center mb-4">
             <label className="flex items-center space-x-1 text-gray-700">
               <input
                 type="radio"
@@ -162,6 +166,21 @@ const ExamenEstomatologico = ({ onBack }) => {
               <span className="text-sm">Asintomático</span>
             </label>
           </div>
+          {/* NUEVO: Observaciones Músculos Masticadores */}
+          <div>
+            <label className="block text-gray-700 mb-1" htmlFor="observaciones_musculosMasticadores">
+              Observaciones
+            </label>
+            <textarea
+              id="observaciones_musculosMasticadores"
+              name="observaciones_musculosMasticadores"
+              value={formData.observaciones_musculosMasticadores}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              rows="2"
+              placeholder="Escriba observaciones adicionales sobre músculos masticadores..."
+            />
+          </div>
         </div>
 
         {/* 1) Labios - Lengua en 2 columnas */}
@@ -176,7 +195,7 @@ const ExamenEstomatologico = ({ onBack }) => {
               ['Leucoplasia', 'labios_leucoplasia']
             ])}
             <div className="mb-6">
-              <label className="block text-gray-700 mb-1">Otro (Labios)</label>
+              <label className="block text-gray-700 mb-1"></label>
               <input
                 type="text"
                 name="labios_otro"
@@ -198,7 +217,7 @@ const ExamenEstomatologico = ({ onBack }) => {
               ['Saburral', 'lengua_saburral']
             ])}
             <div className="mb-6">
-              <label className="block text-gray-700 mb-1">Otro (Lengua)</label>
+              <label className="block text-gray-700 mb-1"> </label>
               <input
                 type="text"
                 name="lengua_otro"
@@ -222,7 +241,7 @@ const ExamenEstomatologico = ({ onBack }) => {
               ['Palatitis Protésica', 'paladar_palatitisProtesica']
             ])}
             <div className="mb-6">
-              <label className="block text-gray-700 mb-1">Otro (Paladar)</label>
+              <label className="block text-gray-700 mb-1"></label>
               <input
                 type="text"
                 name="paladar_otro"
@@ -242,7 +261,7 @@ const ExamenEstomatologico = ({ onBack }) => {
               ['Liquen Plano', 'mejillas_liquen_plano']
             ])}
             <div className="mb-6">
-              <label className="block text-gray-700 mb-1">Otro (Mejillas)</label>
+              <label className="block text-gray-700 mb-1"></label>
               <input
                 type="text"
                 name="mejillas_otro"
@@ -266,9 +285,7 @@ const ExamenEstomatologico = ({ onBack }) => {
               ['Aftas', 'piso_aftas']
             ])}
             <div className="mb-6">
-              <label className="block text-gray-700 mb-1">
-                Otro (Piso de Boca)
-              </label>
+              <label className="block text-gray-700 mb-1"></label>
               <input
                 type="text"
                 name="piso_otro"
@@ -288,9 +305,7 @@ const ExamenEstomatologico = ({ onBack }) => {
               ['Torus Mandibular', 'maxilares_torusMandibular']
             ])}
             <div className="mb-6">
-              <label className="block text-gray-700 mb-1">
-                Otro (Maxilares)
-              </label>
+              <label className="block text-gray-700 mb-1"></label>
               <input
                 type="text"
                 name="maxilares_otro"

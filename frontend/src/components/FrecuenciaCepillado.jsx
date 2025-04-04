@@ -47,7 +47,7 @@ const FrecuenciaCepillado = ({ onBack }) => {
           ← Volver
         </button>
         <h2 className="text-2xl font-bold text-gray-800">
-          2. Frecuencia del Cepillado
+           Frecuencia del Cepillado
         </h2>
       </div>
 
