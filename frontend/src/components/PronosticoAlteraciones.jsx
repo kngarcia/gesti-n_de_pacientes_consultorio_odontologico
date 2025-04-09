@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import AnalisisOclusionAtm from './AnalisisOclusionAtm';
 import { useNavigate } from "react-router-dom";
 
-
 // Lista de dientes (FDI)
 const listaDientesFDI = [
   '11','12','13','14','15','16','17','18',
@@ -22,13 +21,11 @@ const listaUbicaciones = [
 const PronosticoAlteraciones = ({ onBack }) => {
   const navigate = useNavigate();
   const [MostrarAnalisisOclusionAtm, setMostrarAnalisisOclusionAtm] = useState(false);
-  const [formData, setFormData] = useState({
-    // Pronóstico General
-    pronosticoGeneral: '',
 
+  const [formData, setFormData] = useState({
     // Pronósticos Específicos (varios dientes)
     pronosticosEspecificos: [
-      { diente: '', ubicacion: '', pronostico: '' }
+      { diente: '', ubicacion: '', pronostico: '', tipoAlteracion: '' }
     ],
 
     // Alteraciones Periodontales
@@ -44,7 +41,7 @@ const PronosticoAlteraciones = ({ onBack }) => {
     pulparSintomatologia: '', // "sintomatico" o "asintomatico"
     pulparObservaciones: '',
 
-    // Observaciones generales (si lo deseas, o puedes usar sólo pulparObservaciones)
+    // Observaciones generales
     observaciones: ''
   });
 
@@ -67,7 +64,7 @@ const PronosticoAlteraciones = ({ onBack }) => {
       ...formData,
       pronosticosEspecificos: [
         ...formData.pronosticosEspecificos,
-        { diente: '', ubicacion: '', pronostico: '' }
+        { diente: '', ubicacion: '', pronostico: '', tipoAlteracion: '' }
       ]
     });
   };
@@ -111,11 +108,11 @@ const PronosticoAlteraciones = ({ onBack }) => {
     console.log('Datos Pronóstico y Alteraciones:', formData);
     // Lógica de guardado o redirección
   };
-  
+
   if (MostrarAnalisisOclusionAtm) {
-      return <AnalisisOclusionAtm onBack={() => setMostrarAnalisisOclusionAtm(false)} />;
-    }
-    
+    return <AnalisisOclusionAtm onBack={() => setMostrarAnalisisOclusionAtm(false)} />;
+  }
+  
   return (
     <div className="w-full min-h-screen p-6">
       {/* Encabezado */}
@@ -137,110 +134,11 @@ const PronosticoAlteraciones = ({ onBack }) => {
           </button>
         )}
         <h2 className="text-2xl font-bold text-gray-800">
-          Pronóstico y Alteraciones
+          Alteraciones y Pronóstico  
         </h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        
-        {/* Pronóstico General */}
-        <div className="border-b pb-4">
-          <label className="block text-gray-700 font-semibold mb-1">
-            Pronóstico General
-          </label>
-          <textarea
-            name="pronosticoGeneral"
-            rows="2"
-            value={formData.pronosticoGeneral}
-            onChange={handleChange}
-            placeholder="Describe el pronóstico general..."
-            className="w-full max-w-2xl border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ></textarea>
-        </div>
-
-        {/* Pronóstico Específico */}
-        <div className="border-b pb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Pronóstico Específico
-          </h3>
-
-          {formData.pronosticosEspecificos.map((item, index) => (
-            <div key={index} className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mb-4">
-              {/* Select Diente */}
-              <div>
-                <label className="block text-gray-700 mb-1">
-                  Diente
-                </label>
-                <select
-                  name="diente"
-                  value={item.diente}
-                  onChange={(e) => handlePronosticoEspecificoChange(index, e)}
-                  className="w-full border border-gray-300 rounded p-2"
-                >
-                  <option value="">-- Selecciona --</option>
-                  {listaDientesFDI.map((num) => (
-                    <option key={num} value={num}>{num}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Select Ubicación */}
-              <div>
-                <label className="block text-gray-700 mb-1">
-                  Ubicación
-                </label>
-                <select
-                  name="ubicacion"
-                  value={item.ubicacion}
-                  onChange={(e) => handlePronosticoEspecificoChange(index, e)}
-                  className="w-full border border-gray-300 rounded p-2"
-                >
-                  <option value="">-- Selecciona --</option>
-                  {listaUbicaciones.map((loc) => (
-                    <option key={loc} value={loc}>{loc}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Pronóstico */}
-              <div>
-                <label className="block text-gray-700 mb-1">
-                  Pronóstico
-                </label>
-                <input
-                  type="text"
-                  name="pronostico"
-                  value={item.pronostico}
-                  onChange={(e) => handlePronosticoEspecificoChange(index, e)}
-                  className="w-full border border-gray-300 rounded p-2"
-                  placeholder="Favorable / Reservado..."
-                />
-              </div>
-
-              {/* Botón Eliminar si hay más de 1 pronóstico */}
-              {formData.pronosticosEspecificos.length > 1 && (
-                <div className="col-span-3 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => removerPronostico(index)}
-                    className="text-sm px-3 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {/* Botón para agregar otro pronóstico */}
-          <button
-            type="button"
-            onClick={agregarPronostico}
-            className="text-sm px-4 py-2 rounded bg-green-100 text-green-700 hover:bg-green-200"
-          >
-            + Agregar Otro Pronóstico
-          </button>
-        </div>
 
         {/* Alteraciones en 2 columnas: Periodontales y Pulpares */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -356,8 +254,111 @@ const PronosticoAlteraciones = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Observaciones Generales (opcional) */}
+        {/* Observaciones Generales (opcional) + Pronóstico Específico */}
         <div>
+          {/* Pronóstico Específico */}
+          <div className="border-b pb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Pronóstico Específico
+            </h3>
+  
+            {formData.pronosticosEspecificos.map((item, index) => (
+              <div key={index} className="grid grid-cols-1 sm:grid-cols-4 gap-4 max-w-4xl mb-4">
+                
+                {/* Select Diente */}
+                <div>
+                  <label className="block text-gray-700 mb-1">
+                    Diente
+                  </label>
+                  <select
+                    name="diente"
+                    value={item.diente}
+                    onChange={(e) => handlePronosticoEspecificoChange(index, e)}
+                    className="w-full border border-gray-300 rounded p-2"
+                  >
+                    <option value="">-- Selecciona --</option>
+                    {listaDientesFDI.map((num) => (
+                      <option key={num} value={num}>{num}</option>
+                    ))}
+                  </select>
+                </div>
+  
+                {/* Select Ubicación */}
+                <div>
+                  <label className="block text-gray-700 mb-1">
+                    Ubicación
+                  </label>
+                  <select
+                    name="ubicacion"
+                    value={item.ubicacion}
+                    onChange={(e) => handlePronosticoEspecificoChange(index, e)}
+                    className="w-full border border-gray-300 rounded p-2"
+                  >
+                    <option value="">-- Selecciona --</option>
+                    {listaUbicaciones.map((loc) => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Nuevo campo: Tipo de Alteración */}
+                <div>
+                  <label className="block text-gray-700 mb-1">
+                    Tipo de Alteración
+                  </label>
+                  <select
+                    name="tipoAlteracion"
+                    value={item.tipoAlteracion}
+                    onChange={(e) => handlePronosticoEspecificoChange(index, e)}
+                    className="w-full border border-gray-300 rounded p-2"
+                  >
+                    <option value="">-- Selecciona --</option>
+                    <option value="periodontal">Periodontal</option>
+                    <option value="pulpar">Pulpar</option>
+                    <option value="periodontal y pulpar">Periodontal y Pulpar</option>
+                  </select>
+                </div>
+  
+                {/* Pronóstico */}
+                <div>
+                  <label className="block text-gray-700 mb-1">
+                    Pronóstico
+                  </label>
+                  <input
+                    type="text"
+                    name="pronostico"
+                    value={item.pronostico}
+                    onChange={(e) => handlePronosticoEspecificoChange(index, e)}
+                    className="w-full border border-gray-300 rounded p-2"
+                    placeholder="Favorable / Reservado..."
+                  />
+                </div>
+  
+                {/* Botón Eliminar si hay más de 1 pronóstico */}
+                {formData.pronosticosEspecificos.length > 1 && (
+                  <div className="col-span-4 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => removerPronostico(index)}
+                      className="text-sm px-3 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+  
+            {/* Botón para agregar otro pronóstico */}
+            <button
+              type="button"
+              onClick={agregarPronostico}
+              className="text-sm px-4 py-2 rounded bg-green-100 text-green-700 hover:bg-green-200"
+            >
+              + Agregar Otro Pronóstico
+            </button>
+          </div>
+
           <label className="block text-gray-700 font-semibold mb-2">
             Observaciones Generales
           </label>

@@ -22,9 +22,6 @@ const AnalisisOclusionAtm = ({ onBack }) => {
 
     // Observaciones
     observaciones: '',
-
-    // Plan de Tratamiento Odontológico
-    planTratamiento: ''
   });
 
   // Maneja el cambio de cualquier input
@@ -201,20 +198,6 @@ const AnalisisOclusionAtm = ({ onBack }) => {
           ></textarea>
         </div>
 
-        {/* Plan de Tratamiento Odontológico */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">
-            Plan de Tratamiento Odontológico
-          </h3>
-          <textarea
-            name="planTratamiento"
-            rows="3"
-            value={formData.planTratamiento}
-            onChange={handleChange}
-            placeholder="Describe el plan de tratamiento..."
-            className="w-full max-w-3xl border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ></textarea>
-        </div>
 
         {/* Botones de Acción */}
         <div className="flex justify-end gap-4 pt-6 border-t">
