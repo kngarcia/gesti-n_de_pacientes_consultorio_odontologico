@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import AnalisisOclusionAtm from './AnalisisOclusionAtm';
+import { useNavigate } from "react-router-dom";
+
 
 // Lista de dientes (FDI)
 const listaDientesFDI = [
@@ -21,7 +22,6 @@ const listaUbicaciones = [
 const PronosticoAlteraciones = ({ onBack }) => {
   const navigate = useNavigate();
   const [MostrarAnalisisOclusionAtm, setMostrarAnalisisOclusionAtm] = useState(false);
-
   const [formData, setFormData] = useState({
     // Pronóstico General
     pronosticoGeneral: '',
@@ -112,9 +112,10 @@ const PronosticoAlteraciones = ({ onBack }) => {
     // Lógica de guardado o redirección
   };
   
-  if (setMostrarAnalisisOclusionAtm) {
+  if (MostrarAnalisisOclusionAtm) {
       return <AnalisisOclusionAtm onBack={() => setMostrarAnalisisOclusionAtm(false)} />;
     }
+    
   return (
     <div className="w-full min-h-screen p-6">
       {/* Encabezado */}

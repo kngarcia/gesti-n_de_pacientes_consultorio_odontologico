@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import PronosticoAlteraciones from './PronosticoAlteraciones';
+import { useNavigate } from "react-router-dom";
 
 const ExamenEstomatologico = ({ onBack }) => {
   const navigate = useNavigate();
   const [MostrarPronosticoAlteraciones, setMostrarPronosticoAlteraciones] = useState(false);
-
   const [formData, setFormData] = useState({
     // Músculos masticadores
     musculosMasticadores: '', // sintomático / asintomático
@@ -108,7 +107,7 @@ const ExamenEstomatologico = ({ onBack }) => {
 
   // Renderizado condicional para mostrar PronosticoAlteraciones
   if (MostrarPronosticoAlteraciones) {
-    return <PronosticoAlteraciones onBack={() => setMostrarPronosticoAlteraciones(false)} />;
+    return < PronosticoAlteraciones onBack={() => setMostrarPronosticoAlteraciones(false)} />;
   }
 
   return (
@@ -323,8 +322,8 @@ const ExamenEstomatologico = ({ onBack }) => {
           {onBack && (
             <button
               type="button"
-              onClick={onBack}
               className="px-5 py-2.5 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              onClick={onBack}
             >
               Atrás
             </button>
@@ -336,6 +335,7 @@ const ExamenEstomatologico = ({ onBack }) => {
           >
             Siguiente
           </button>
+          
         </div>
       </form>
     </div>

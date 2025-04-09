@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import PronosticoAlteraciones from './PronosticoAlteraciones';
 
 const AnalisisOclusionAtm = ({ onBack }) => {
-    const navigate = useNavigate();
-
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     // PLANO FRONTAL
     frontal_mordidaAbierta: 'No',
@@ -67,9 +65,7 @@ const AnalisisOclusionAtm = ({ onBack }) => {
     console.log('Datos Análisis de Oclusión y ATM:', formData);
     // Aquí tu lógica para guardar o navegar
   };
-  const handleBack = () => {
-    navigate('./PronosticoAlteraciones'); // O navigate(-1), según tu necesidad
-  };
+  
 
   return (
     <div className="w-full min-h-screen p-6">
