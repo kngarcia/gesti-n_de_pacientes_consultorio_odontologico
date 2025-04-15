@@ -17,7 +17,10 @@ const login = async (req, res) => {
     console.log("Contraseña en la BD:", usuario.contrasena); // Se muestra la propiedad "contrasena"
 
     // Comparamos la contraseña ingresada con la contraseña encriptada almacenada
-    const passwordValida = await verificarPassword(password, usuario.contrasena);
+    const passwordValida = await verificarPassword(
+      password,
+      usuario.contrasena
+    );
     if (!passwordValida) {
       return res.status(401).json({ mensaje: "Contraseña incorrecta" });
     }

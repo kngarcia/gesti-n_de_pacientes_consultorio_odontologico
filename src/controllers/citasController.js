@@ -5,11 +5,11 @@ const obtenerCitas = async (req, res) => {
   try {
     const citas = await models.Citas.findAll({
       include: [
-        { model: models.Pacientes, as: 'Paciente' },
-        { model: models.Usuarios, as: 'Auxiliar' },
+        { model: models.Pacientes, as: "Paciente" },
+        { model: models.Usuarios, as: "Auxiliar" },
       ],
       raw: true,
-      nest: true
+      nest: true,
     });
 
     // Devuelve las fechas tal cual están en DB (UTC)
@@ -28,15 +28,15 @@ const crearCita = async (req, res) => {
 
     // Validación directa (el frontend ya envió la hora local)
     if (fechaLocal < ahora) {
-      return res.status(400).json({ 
-        mensaje: "No se pueden agendar citas en horas pasadas" 
+      return res.status(400).json({
+        mensaje: "No se pueden agendar citas en horas pasadas",
       });
     }
 
     // Guarda la fecha tal cual viene del frontend (ya es UTC si el frontend hizo la conversión)
     const nuevaCita = await models.Citas.create({
       ...req.body,
-      fecha: fechaLocal.toISOString() // Guarda como ISO string
+      fecha: fechaLocal.toISOString(), // Guarda como ISO string
     });
 
     res.status(201).json(nuevaCita);
@@ -50,14 +50,14 @@ const actualizarCita = async (req, res) => {
   try {
     const { id } = req.params;
     const { fecha } = req.body;
-    
+
     if (fecha) {
       const fechaLocal = new Date(fecha);
       const ahora = new Date();
-      
+
       if (fechaLocal < ahora) {
         return res.status(400).json({
-          mensaje: "No se pueden agendar citas en horas pasadas"
+          mensaje: "No se pueden agendar citas en horas pasadas",
         });
       }
     }
@@ -66,10 +66,10 @@ const actualizarCita = async (req, res) => {
     if (!cita) {
       return res.status(404).json({ mensaje: "Cita no encontrada" });
     }
-    
-    await cita.update({ 
+
+    await cita.update({
       ...req.body,
-      fecha: fecha ? new Date(fecha).toISOString() : cita.fecha
+      fecha: fecha ? new Date(fecha).toISOString() : cita.fecha,
     });
 
     res.json(cita);
