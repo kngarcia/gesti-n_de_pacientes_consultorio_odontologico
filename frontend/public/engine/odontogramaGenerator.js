@@ -114,7 +114,7 @@ OdontogramaGenerator.prototype.prepareOdontogramaAdult = function (
       self.updateLoad();
     };
 
-    image.src = "/src/assets/Odontograma/dentadura-sup-" + i + ".png";
+    image.src = "/Odontograma/dentadura-sup-" + i + ".png";
 
     tooth.id = i;
     tooth.image = image;
@@ -176,7 +176,7 @@ OdontogramaGenerator.prototype.prepareOdontogramaAdult = function (
       self.updateLoad();
     };
 
-    image.src = "/src/assets/Odontograma/dentadura-sup-" + i + ".png";
+    image.src = "/Odontograma/dentadura-sup-" + i + ".png";
 
     tooth.id = i;
     tooth.image = image;
@@ -236,7 +236,7 @@ OdontogramaGenerator.prototype.prepareOdontogramaAdult = function (
       self.updateLoad();
     };
 
-    image.src = "/src/assets/Odontograma/dentadura-sup-" + i + ".png";
+    image.src = "/Odontograma/dentadura-inf-" + i + ".png";
 
     tooth.id = i;
     tooth.image = image;
@@ -297,7 +297,7 @@ OdontogramaGenerator.prototype.prepareOdontogramaAdult = function (
       self.updateLoad();
     };
 
-    image.src = "/src/assets/Odontograma/dentadura-sup-" + i + ".png";
+    image.src = "/Odontograma/dentadura-inf-" + i + ".png";
 
     tooth.id = i;
     tooth.image = image;
@@ -375,7 +375,7 @@ OdontogramaGenerator.prototype.prepareOdontogramaChild = function (
 
     var image = new Image();
 
-    image.src = "/src/assets/Odontograma/dentadura-sup-" + i + ".png";
+    image.src = "/Odontograma/dentadura-sup-" + i + ".png";
 
     tooth.id = i;
     tooth.image = image;
@@ -431,7 +431,7 @@ OdontogramaGenerator.prototype.prepareOdontogramaChild = function (
 
     var image = new Image();
 
-    image.src = "/src/assets/Odontograma/dentadura-sup-" + i + ".png";
+    image.src = "/Odontograma/dentadura-sup-" + i + ".png";
 
     tooth.id = i;
     tooth.image = image;
@@ -487,7 +487,7 @@ OdontogramaGenerator.prototype.prepareOdontogramaChild = function (
 
     var image = new Image();
 
-    image.src = "/src/assets/Odontograma/dentadura-sup-" + i + ".png";
+    image.src = "/Odontograma/dentadura-inf-" + i + ".png";
 
     tooth.id = i;
     tooth.image = image;
@@ -543,7 +543,7 @@ OdontogramaGenerator.prototype.prepareOdontogramaChild = function (
 
     var image = new Image();
 
-    image.src = "/src/assets/Odontograma/dentadura-sup-" + i + ".png";
+    image.src = "/Odontograma/dentadura-inf-" + i + ".png";
 
     tooth.id = i;
     tooth.image = image;

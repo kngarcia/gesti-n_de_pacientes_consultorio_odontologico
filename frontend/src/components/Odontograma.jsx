@@ -6,46 +6,75 @@ const Odontograma = ({ onBack }) => {
     useState(false);
 
   useEffect(() => {
-    // Cargar el script del engine de forma dinámica
-    const script = document.createElement("script");
-    script.src = "/engine/engine.js"; // Ruta desde public
-    script.async = true;
-    document.body.appendChild(script);
+    const loadScript = (src) => {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.async = false;
+        script.onload = () => {
+          console.log(`✅ Script cargado: ${src}`);
+          resolve();
+        };
+        script.onerror = () => {
+          console.error(`❌ Error cargando script: ${src}`);
+          reject();
+        };
+        document.body.appendChild(script);
+      });
+    };
 
-    script.onload = () => {
-      if (window.Engine) {
-        const canvas = document.getElementById("canvas");
-        const engine = new window.Engine();
+    async function loadEngine() {
+      try {
+        await loadScript("/engine/constants.js");
+        await loadScript("/engine/settings.js");
+        await loadScript("/engine/rect.js");
+        await loadScript("/engine/damage.js");
+        await loadScript("/engine/textBox.js");
+        await loadScript("/engine/tooth.js");
+        await loadScript("/engine/menuItem.js");
+        await loadScript("/engine/renderer.js");
+        await loadScript("/engine/odontogramaGenerator.js");
+        await loadScript("/engine/collisionHandler.js");
+        await loadScript("/engine/engine.js");
 
-        engine.setCanvas(canvas);
-        engine.init();
+        console.log("🧠 Todos los scripts del motor odontograma cargados");
 
-        canvas.addEventListener("mousedown", (event) =>
-          engine.onMouseClick(event)
-        );
-        canvas.addEventListener("mousemove", (event) =>
-          engine.onMouseMove(event)
-        );
-        window.addEventListener("keydown", (event) =>
-          engine.onButtonClick(event)
-        );
+        if (window.Engine) {
+          const canvas = document.getElementById("canvas");
+          const engine = new window.Engine();
 
-        engine.loadPatientData(
-          "Bogotá",
-          "Nombre del Paciente",
-          "1234",
-          "hc123",
-          "10/04/2025",
-          "Odontólogo/a",
-          "Observaciones...",
-          "Especificaciones..."
-        );
+          engine.setCanvas(canvas);
+          engine.init();
+
+          canvas.addEventListener("mousedown", (event) =>
+            engine.onMouseClick(event)
+          );
+          canvas.addEventListener("mousemove", (event) =>
+            engine.onMouseMove(event)
+          );
+          window.addEventListener("keydown", (event) =>
+            engine.onButtonClick(event)
+          );
+
+          engine.loadPatientData(
+            "Bogotá",
+            "Nombre del Paciente",
+            "1234",
+            "hc123",
+            "10/04/2025",
+            "Odontólogo/a",
+            "Observaciones...",
+            "Especificaciones..."
+          );
+        } else {
+          console.error("❌ window.Engine no está disponible");
+        }
+      } catch (error) {
+        console.error("❌ Error al cargar los scripts del motor", error);
       }
-    };
+    }
 
-    return () => {
-      document.body.removeChild(script);
-    };
+    loadEngine();
   }, []);
 
   if (mostrarExamenEstomatologico) {
