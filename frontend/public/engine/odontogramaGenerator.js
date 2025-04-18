@@ -335,13 +335,6 @@ OdontogramaGenerator.prototype.prepareOdontogramaAdult = function (
   }
 };
 
-/**
- * Method to prepare an odontograma for a child
- * @param {type} odontograma container for the odontograma, teeths
- * @param {type} spaces container for the spaces between teeth
- * @param {type} canvas the canvas where the odontograma will be drawn on
- * @returns {void}
- */
 OdontogramaGenerator.prototype.prepareOdontogramaChild = function (
   odontograma,
   spaces,
