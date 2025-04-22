@@ -2023,6 +2023,58 @@ Engine.prototype.createMenu = function () {
   this.createMenuButton(posX, posY, buttonWidth, buttonHeight, "Post", 10);
 };
 
+/**
+ * Exporta el estado actual del odontograma en formato lista de dientes
+ * para enviar al backend.
+ * @returns {Array} Array de objetos con numero, zona, afectacion, observacion
+ */
+Engine.prototype.exportDentalStatus = function () {
+  const resultado = [];
+
+  for (let i = 0; i < this.mouth.length; i++) {
+    const diente = this.mouth[i];
+
+    // Si el diente tiene texto en el textbox (nota asociada)
+    if (
+      diente.textBox &&
+      diente.textBox.text &&
+      diente.textBox.text.trim() !== ""
+    ) {
+      resultado.push({
+        numero: diente.id,
+        zona: "general",
+        afectacion: "Observación",
+        observacion: diente.textBox.text.trim(),
+      });
+    }
+
+    // Si el diente tiene daños
+    for (let j = 0; j < diente.damages.length; j++) {
+      resultado.push({
+        numero: diente.id,
+        zona: "general", // Podrías mejorarlo si tuvieras zonas más específicas
+        afectacion: diente.damages[j].label || "Daño",
+        observacion: "",
+      });
+    }
+
+    // Si el diente tiene daños en superficies (checkboxes)
+    for (let j = 0; j < diente.checkBoxes.length; j++) {
+      const checkBox = diente.checkBoxes[j];
+      if (checkBox.state !== 0) {
+        resultado.push({
+          numero: diente.id,
+          zona: checkBox.id, // nombre de la zona, ej: "oclusal", "mesial"
+          afectacion: "Afectado",
+          observacion: "",
+        });
+      }
+    }
+  }
+
+  return resultado;
+};
+
 Engine.prototype.createMenuButton = function (x, y, width, height, text, id) {
   var menuitem = new MenuItem();
   menuitem.setUp(x, y, width, height);

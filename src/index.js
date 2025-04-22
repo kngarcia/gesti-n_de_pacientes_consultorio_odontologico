@@ -10,7 +10,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-
 // 🔹 Conexión a la base de datos MySQL
 conectarDB();
 
@@ -18,14 +17,15 @@ conectarDB();
 const pacientesRoutes = require("./routes/pacientes");
 const usuarioRoutes = require("./routes/usuarios");
 const citasRoutes = require("./routes/citas");
-const authRoutes = require("./routes/authRoutes"); // Para autenticación
+const authRoutes = require("./routes/authRoutes");
+const odontogramaRoutes = require("./routes/odontograma");
 
 // 🔹 Usamos las rutas
 app.use("/api/pacientes", pacientesRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/citas", citasRoutes);
-app.use("/api/auth", authRoutes); // Endpoint para autenticación
-
+app.use("/api/auth", authRoutes);
+app.use("/odontograma", odontogramaRoutes);
 
 // 🔹  Ruta raíz para verificar que el servidor está funcionando correctamente
 app.get("/", (req, res) => {

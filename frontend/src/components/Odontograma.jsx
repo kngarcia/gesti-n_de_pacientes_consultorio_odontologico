@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ExamenEstomatologico from "./ExamenEstomatologico";
+import { guardarOdontograma } from "../../../src/services/guardarOdontograma";
 
 const Odontograma = ({ onBack }) => {
   const [mostrarExamenEstomatologico, setMostrarExamenEstomatologico] =
@@ -66,6 +67,9 @@ const Odontograma = ({ onBack }) => {
             "Observaciones...",
             "Especificaciones..."
           );
+
+          // Guardar engine en window para acceder después
+          window.odontogramaEngine = engine;
         } else {
           console.error("❌ window.Engine no está disponible");
         }
@@ -76,6 +80,25 @@ const Odontograma = ({ onBack }) => {
 
     loadEngine();
   }, []);
+
+  const handleSiguiente = async () => {
+    try {
+      const engine = window.odontogramaEngine;
+      if (!engine) throw new Error("Motor de odontograma no disponible");
+
+      // Obtener los datos que el motor guardó (esto debe coincidir con tu lógica interna)
+      const dientes = engine.exportDentalStatus(); // debes tener esta función en tu engine
+
+      // Ejemplo estático de ID de examen clínico
+      const id_examen_clinico = 12;
+
+      await guardarOdontograma(id_examen_clinico, dientes);
+      setMostrarExamenEstomatologico(true);
+    } catch (error) {
+      alert("❌ Ocurrió un error al guardar el odontograma.");
+      console.error(error);
+    }
+  };
 
   if (mostrarExamenEstomatologico) {
     return (
