@@ -15,21 +15,24 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_examen_estoma'
       }
     },
-    aftas: {
+    aftas_mejillas: {
       type: DataTypes.ENUM('Si','No'),
-      allowNull: false
+      allowNull: false,
+      field: 'aftas'
     },
-    herpes: {
+    herpes_mejillas: {
       type: DataTypes.ENUM('Si','No'),
-      allowNull: false
+      allowNull: false,
+      field: 'herpes'
     },
     liquen_plano: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false
     },
-    otro: {
+    otro_mejillas: {
       type: DataTypes.STRING(45),
-      allowNull: true
+      allowNull: true,
+      field: 'otro'
     }
   }, {
     sequelize,

@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    Id_intra_oral: {
+    id_intra_oral: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -45,10 +45,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: "No"
     },
-    'alteracion_tamaño': {
+    alteracion_tamano: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false,
-      defaultValue: "No"
+      defaultValue: "No",
     },
     alteracion_forma: {
       type: DataTypes.ENUM('Si','No'),

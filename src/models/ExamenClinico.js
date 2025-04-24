@@ -14,10 +14,6 @@ module.exports = function(sequelize, DataTypes) {
         model: 'HistoriaClinica',
         key: 'id_historia'
       }
-    },
-    observaciones: {
-      type: DataTypes.TEXT,
-      allowNull: true
     }
   }, {
     sequelize,

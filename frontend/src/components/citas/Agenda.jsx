@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import FormularioCita from "./FormularioCita";
-import Modal from "./Modal";
-import Spinner from "./Spinner";
-import ConfirmModal from "./ConfirmModal";
+import Modal from "../Modal";
+import Spinner from "../Spinner";
+import ConfirmModal from "../ConfirmModal";
+import Pagination from "../Pagination";
 
 const Agenda = () => {
   const [citas, setCitas] = useState([]);
@@ -13,8 +14,10 @@ const Agenda = () => {
   const [error, setError] = useState(null);
   const [citaACancelar, setCitaACancelar] = useState(null);
   const [citaAEditar, setCitaAEditar] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Obtener citas con manejo de estado
+  // Obtener citas
   const fetchCitas = async () => {
     setLoading(true);
     setError(null);
@@ -24,9 +27,7 @@ const Agenda = () => {
         headers: { "Authorization": `Bearer ${token}` }
       });
       
-      if (!response.ok) {
-        throw new Error("Error al obtener citas");
-      }
+      if (!response.ok) throw new Error("Error al obtener citas");
       
       const data = await response.json();
       setCitas(data);
@@ -41,36 +42,46 @@ const Agenda = () => {
 
   useEffect(() => {
     fetchCitas();
-    
     const interval = setInterval(fetchCitas, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // Citas filtradas y ordenadas con useMemo
+  // Citas filtradas y ordenadas
   const citasFiltradas = useMemo(() => {
     let filtered = [...citas];
-    
+  
     if (filtroFecha) {
       filtered = filtered.filter(cita => {
-        const fechaCita = new Date(cita.fecha);
-        const fechaFiltro = new Date(filtroFecha);
-        return (
-          fechaCita.getFullYear() === fechaFiltro.getFullYear() &&
-          fechaCita.getMonth() === fechaFiltro.getMonth() &&
-          fechaCita.getDate() === fechaFiltro.getDate()
-        );
+        const fechaCita = new Date(cita.fecha).toISOString().split("T")[0];
+        const fechaFiltro = new Date(filtroFecha).toISOString().split("T")[0];
+        return fechaCita === fechaFiltro;
       });
     }
-    
+  
     if (filtroPaciente) {
-      filtered = filtered.filter(cita => 
-        cita.Paciente.nombre_completo.toLowerCase().includes(filtroPaciente.toLowerCase())
-      );
+      filtered = filtered.filter(cita => {
+        const nombrePaciente = cita.id_paciente 
+          ? cita.Paciente?.nombre_completo?.toLowerCase() 
+          : cita.nombre_espontaneo?.toLowerCase();
+        return nombrePaciente?.includes(filtroPaciente.toLowerCase());
+      });
     }
-    
+  
     return filtered.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
   }, [citas, filtroFecha, filtroPaciente]);
 
+  // Citas para la página actual
+  const citasPaginaActual = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return citasFiltradas.slice(startIndex, startIndex + itemsPerPage);
+  }, [citasFiltradas, currentPage, itemsPerPage]);
+
+  // Resetear página al filtrar
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filtroFecha, filtroPaciente, itemsPerPage]);
+
+  // Funciones para manejar citas
   const handleCancelarCita = async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -119,7 +130,7 @@ const Agenda = () => {
     setFiltroPaciente("");
   };
 
-  // Función para formatear fecha sin cambios de zona horaria
+  // Formateadores
   const formatFechaLocal = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -129,18 +140,17 @@ const Agenda = () => {
     });
   };
 
-  // Función para formatear hora sin cambios de zona horaria
   const formatHoraLocal = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('es-ES', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
-    });
+    }).replace("AM", "a. m.").replace("PM", "p. m.");
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
+    <div className="p-6 bg-white rounded-lg shadow-md w-full max-w-full overflow-x-auto">
       <h2 className="text-2xl font-bold text-gray-700 mb-4">Agenda de Citas</h2>
 
       {error && (
@@ -149,6 +159,7 @@ const Agenda = () => {
         </div>
       )}
 
+      {/* Filtros */}
       <div className="mb-4 flex flex-wrap gap-4 items-end">
         <div>
           <label className="block text-sm font-medium mb-1">Fecha</label>
@@ -185,43 +196,59 @@ const Agenda = () => {
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto mb-4">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-blue-500 text-white">
-                  <th className="p-3 text-left">Paciente</th>
-                  <th className="p-3 text-left">Fecha</th>
-                  <th className="p-3 text-left">Hora</th>
-                  <th className="p-3 text-left">Estado</th>
-                  <th className="p-3 text-left">Acciones</th>
+          <div className="mt-6 overflow-x-auto max-w-7xl mx-auto rounded-lg shadow-md bg-white">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Paciente</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Documento</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Teléfono</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Fecha</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Hora</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Motivo</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Estado</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Acciones</th>
                 </tr>
               </thead>
-              <tbody>
-                {citasFiltradas.map((cita) => (
-                  <tr key={cita.id_cita} className="border-t hover:bg-gray-50">
-                    <td className="p-3">{cita.Paciente.nombre_completo}</td>
-                    <td className="p-3">{formatFechaLocal(cita.fecha)}</td>
-                    <td className="p-3">{formatHoraLocal(cita.fecha)}</td>
-                    <td className="p-3">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        cita.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' :
-                        cita.estado === 'atendida' ? 'bg-green-100 text-green-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
+              <tbody className="divide-y divide-gray-100 text-gray-700">
+                {citasPaginaActual.map((cita) => (
+                  <tr key={cita.id_cita} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3">
+                      {cita.id_paciente ? cita.Paciente?.nombre_completo : cita.nombre_espontaneo}
+                    </td>
+                    <td className="px-4 py-3 font-mono">
+                      {cita.id_paciente ? cita.Paciente?.documento_identidad : cita.documento_espontaneo || '-'}
+                    </td>
+                    <td className="px-4 py-3 font-mono">
+                      {cita.id_paciente ? cita.Paciente?.telefono : cita.telefono_espontaneo}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">{formatFechaLocal(cita.fecha)}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{formatHoraLocal(cita.fecha)}</td>
+                    <td className="px-4 py-3 max-w-[180px] truncate hover:whitespace-normal hover:max-w-none">
+                      {cita.motivo_cita}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border 
+                        ${cita.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                          cita.estado === 'atendida' ? 'bg-green-100 text-green-800 border-green-200' :
+                          'bg-red-100 text-red-800 border-red-200'}`}>
                         {cita.estado}
                       </span>
                     </td>
-                    <td className="p-3">
+                    <td className="px-4 py-3 whitespace-nowrap space-x-2">
                       <button
                         onClick={() => handleEditarCita(cita.id_cita)}
-                        className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 mr-2"
+                        className="bg-blue-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-blue-600 transition-colors"
                       >
                         Editar
                       </button>
                       <button
                         onClick={() => setCitaACancelar(cita.id_cita)}
-                        className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
                         disabled={cita.estado === 'cancelada'}
+                        className={`text-sm px-3 py-1.5 rounded-lg transition-colors
+                          ${cita.estado === 'cancelada'
+                            ? 'bg-gray-300 text-white cursor-not-allowed'
+                            : 'bg-red-500 text-white hover:bg-red-600'}`}
                       >
                         Cancelar
                       </button>
@@ -232,6 +259,7 @@ const Agenda = () => {
             </table>
           </div>
 
+
           {citasFiltradas.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               {filtroFecha || filtroPaciente ? (
@@ -241,12 +269,45 @@ const Agenda = () => {
               )}
             </div>
           )}
+
+          {/* Paginación y contador */}
+          {citasFiltradas.length > 0 && (
+            <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
+              <div className="text-sm text-gray-600">
+                Mostrando {Math.min((currentPage - 1) * itemsPerPage + 1, citasFiltradas.length)}-
+                {Math.min(currentPage * itemsPerPage, citasFiltradas.length)} de {citasFiltradas.length} citas
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <div className="flex items-center">
+                  <span className="mr-2 text-sm">Mostrar:</span>
+                  <select 
+                    value={itemsPerPage}
+                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                    className="border rounded p-1 text-sm"
+                  >
+                    {[5, 10, 20, 50].map(size => (
+                      <option key={size} value={size}>{size}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <Pagination
+                  totalItems={citasFiltradas.length}
+                  itemsPerPage={itemsPerPage}
+                  currentPage={currentPage}
+                  onPageChange={setCurrentPage}
+                  maxVisiblePages={5}
+                />
+              </div>
+            </div>
+          )}
         </>
       )}
 
       <button
         onClick={() => setMostrarFormulario(true)}
-        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 flex items-center gap-2"
+        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 flex items-center gap-2 mt-4"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
@@ -254,6 +315,7 @@ const Agenda = () => {
         Agregar nueva cita
       </button>
 
+      {/* Modales */}
       <Modal
         isOpen={mostrarFormulario}
         onClose={() => setMostrarFormulario(false)}
@@ -271,7 +333,11 @@ const Agenda = () => {
       <Modal
         isOpen={!!citaAEditar}
         onClose={() => setCitaAEditar(null)}
-        title={`Editar Cita - ${citaAEditar?.Paciente?.nombre_completo || ''}`}
+        title={`Editar Cita - ${
+          citaAEditar?.id_paciente 
+            ? citaAEditar.Paciente?.nombre_completo 
+            : citaAEditar?.nombre_espontaneo || ''
+        }`}
       >
         <FormularioCita
           citaExistente={citaAEditar}

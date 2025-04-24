@@ -48,6 +48,41 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(20),
       allowNull: true
     },
+
+    nombre_acompanante: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: ''
+    },
+
+    nombre_acompanante: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: '',
+      field: 'nombre_acompañante' // Nombre real en la base de datos
+    },
+    telefono_acompanante: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      defaultValue: '',
+      field: 'telefono_acompañante'
+    },
+    nombre_responsable: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue: '',
+    },
+    parentesco_responsable: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      defaultValue: '',
+    },
+    telefono_responsable: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      defaultValue: '',
+    },
+    
     eps: {
       type: DataTypes.STRING(45),
       allowNull: false

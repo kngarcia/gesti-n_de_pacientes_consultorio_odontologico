@@ -14,7 +14,11 @@ module.exports = function(sequelize, DataTypes) {
         model: 'ExamenClinico',
         key: 'id_examen_clinico'
       }
-    }
+    },
+    observaciones: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
   }, {
     sequelize,
     tableName: 'IntraOral',

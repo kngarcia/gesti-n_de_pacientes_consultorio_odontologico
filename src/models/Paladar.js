@@ -23,11 +23,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false
     },
-    otro: {
+    otro_paladar: {
       type: DataTypes.STRING(45),
-      allowNull: true
+      allowNull: true,
+      field: 'otro'
     },
-    ExamenEstomatologico_id_examen_estoma: {
+    id_examen_estoma: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -52,7 +53,7 @@ module.exports = function(sequelize, DataTypes) {
         name: "fk_Paladar_ExamenEstomatologico1_idx",
         using: "BTREE",
         fields: [
-          { name: "ExamenEstomatologico_id_examen_estoma" },
+          { name: "id_examen_estoma" },
         ]
       },
     ]

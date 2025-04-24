@@ -15,20 +15,22 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_examen_estoma'
       }
     },
-    herpes: {
+    herpes_labios: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false,
-      defaultValue: "No"
+      defaultValue: "No",
+      field: "herpes"
     },
     quelitis_angular: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false,
       defaultValue: "No"
     },
-    mucocele: {
+    mucocele_labios: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false,
-      defaultValue: "No"
+      defaultValue: "No",
+      field: "mucocele"
     },
     frenillo_hipertrofico: {
       type: DataTypes.ENUM('Si','No'),
@@ -40,9 +42,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: "No"
     },
-    otro: {
+    otro_labios: {
       type: DataTypes.STRING(45),
-      allowNull: true
+      allowNull: true,
+      field: "otro"
     }
   }, {
     sequelize,

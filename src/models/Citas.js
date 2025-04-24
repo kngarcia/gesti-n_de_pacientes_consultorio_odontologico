@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize');
+// models/Citas.js
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('Citas', {
     id_cita: {
@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     id_paciente: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true, // Cambiado a true para permitir nulos
       references: {
         model: 'Pacientes',
         key: 'id_paciente'
@@ -31,6 +31,23 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('pendiente','atendida','cancelada'),
       allowNull: true,
       defaultValue: "pendiente"
+    },
+    motivo_cita: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    // Nuevos campos para pacientes espontáneos
+    nombre_espontaneo: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    documento_espontaneo: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    },
+    telefono_espontaneo: {
+      type: DataTypes.STRING(20),
+      allowNull: true
     }
   }, {
     sequelize,
@@ -59,6 +76,14 @@ module.exports = function(sequelize, DataTypes) {
           { name: "id_auxiliar" },
         ]
       },
+      // Nuevos índices para búsquedas
+      {
+        name: "idx_documento_espontaneo",
+        using: "BTREE",
+        fields: [
+          { name: "documento_espontaneo" },
+        ]
+      }
     ]
   });
 };

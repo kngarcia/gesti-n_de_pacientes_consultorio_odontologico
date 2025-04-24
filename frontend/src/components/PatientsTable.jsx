@@ -10,36 +10,45 @@ const PatientsTable = ({ patients, onViewDetails, loading }) => {
     }
   
     return (
-      <div className="mt-4 overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-blue-500 text-white">
-              <th className="p-3 text-left">Cédula</th>
-              <th className="p-3 text-left">Nombre</th>
-              <th className="p-3 text-left">Edad</th>
-              <th className="p-3 text-left">Teléfono</th>
-              <th className="p-3 text-left">Acciones</th>
+      <div className="mt-6 overflow-x-auto rounded-lg shadow-md">
+        <table className="min-w-full divide-y divide-gray-200 bg-white">
+          <thead className="bg-blue-600 text-white">
+            <tr>
+              <th className="px-6 py-3 text-left text-sm font-semibold tracking-wider">Cédula</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold tracking-wider">Nombre</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold tracking-wider">Edad</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold tracking-wider">Teléfono</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold tracking-wider">Acciones</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100 text-gray-700">
             {patients.length === 0 ? (
               <tr>
-                <td colSpan="5" className="text-center p-4 text-gray-500">
+                <td colSpan="5" className="text-center px-6 py-5 text-gray-500 italic">
                   No se encontraron pacientes
                 </td>
               </tr>
             ) : (
               patients.map((patient) => (
-                <tr key={patient.id_paciente} className="border-t hover:bg-gray-50">
-                  <td className="p-3">{patient.documento_identidad}</td>
-                  <td className="p-3">{patient.nombre_completo}</td>
-                  <td className="p-3">{patient.edad}</td>
-                  <td className="p-3">{patient.telefono}</td>
-                  <td className="p-3">
+                <tr key={patient.id_paciente} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">{patient.documento_identidad}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{patient.nombre_completo}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{patient.edad}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{patient.telefono}</td>
+                  <td className="px-6 py-4">
                     <button
                       onClick={() => onViewDetails(patient.id_paciente)}
-                      className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition-colors"
+                      className="inline-flex items-center bg-green-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
                     >
+                      <svg
+                        className="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
                       Ver detalles
                     </button>
                   </td>
@@ -49,6 +58,7 @@ const PatientsTable = ({ patients, onViewDetails, loading }) => {
           </tbody>
         </table>
       </div>
+
     );
   };
   

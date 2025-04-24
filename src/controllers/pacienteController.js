@@ -23,18 +23,33 @@ const obtenerPacientePorId = async (req, res) => {
   }
 };
 
+// Buscar un paciente por documento
+const obtenerPacientePorDocumento = async (req, res) => {
+  try {
+    const paciente = await models.Pacientes.findOne({ where: { documento_identidad: req.params.documento } });
+    if (!paciente) {
+      return res.status(404).json({ mensaje: "Paciente no encontrado" });
+    }
+    res.json(paciente);
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al obtener paciente", error });
+  }
+};
+
 // Crear un paciente
 const crearPaciente = async (req, res) => {
   try {
     const {
       id_doctora, nombre_completo, documento_identidad, edad, telefono, direccion, 
-      fecha_nacimiento, genero, estado_civil, eps, cotizante, beneficiario, 
+      fecha_nacimiento, genero, estado_civil, nombre_acompanante, telefono_acompanante, 
+      nombre_responsable, parentesco_responsable, telefono_responsable, eps, cotizante, beneficiario, 
       origen_enfermedad, motivo_consulta
     } = req.body;
 
     const nuevoPaciente = await models.Pacientes.create({
       id_doctora, nombre_completo, documento_identidad, edad, telefono, direccion, 
-      fecha_nacimiento, genero, estado_civil, eps, cotizante, beneficiario, 
+      fecha_nacimiento, genero, estado_civil, nombre_acompanante, telefono_acompanante, 
+      nombre_responsable, parentesco_responsable, telefono_responsable, eps, cotizante, beneficiario, 
       origen_enfermedad, motivo_consulta
     });
 
@@ -56,6 +71,11 @@ const actualizarPaciente = async (req, res) => {
       fecha_nacimiento,
       genero,
       estado_civil,
+      nombre_acompanante,
+      telefono_acompanante,
+      nombre_responsable,
+      parentesco_responsable,
+      telefono_responsable,
       eps,
       cotizante,
       beneficiario,
@@ -94,6 +114,11 @@ const actualizarPaciente = async (req, res) => {
       fecha_nacimiento: fecha_nacimiento || null,
       genero: genero || null,
       estado_civil: estado_civil || null,
+      nombre_acompanante: nombre_acompanante || '',
+      telefono_acompanante: telefono_acompanante || '',
+      nombre_responsable: nombre_responsable || '',
+      parentesco_responsable: parentesco_responsable || '',
+      telefono_responsable: telefono_responsable || '',
       eps,
       cotizante: cotizante || 'No',
       beneficiario: beneficiario || 'No',
@@ -138,4 +163,5 @@ module.exports = {
   crearPaciente,
   actualizarPaciente,
   eliminarPaciente,
+  obtenerPacientePorDocumento
 };

@@ -20,20 +20,22 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: "No"
     },
-    diabetes: {
+    diabetes_familiar: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false,
-      defaultValue: "No"
+      defaultValue: "No",
+      field: 'diabetes'
     },
     hipertension: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false,
       defaultValue: "No"
     },
-    epilepsia: {
+    epilepsia_familiar: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false,
-      defaultValue: "No"
+      defaultValue: "No",
+      field: 'epilepsia'
     },
     cancer: {
       type: DataTypes.ENUM('Si','No'),
@@ -45,10 +47,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: "No"
     },
-    otras: {
+    otros_antecedentes_familiares: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: true,
-      defaultValue: "No"
+      defaultValue: "No",
+      field: 'otras'
     },
     especificacion: {
       type: DataTypes.TEXT,

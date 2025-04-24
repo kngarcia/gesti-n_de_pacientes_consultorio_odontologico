@@ -39,7 +39,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('Si','No'),
       allowNull: true,
       defaultValue: "No"
-    }
+    },
+    otro_tipo: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
   }, {
     sequelize,
     tableName: 'ExtraOral',

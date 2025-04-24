@@ -15,9 +15,10 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_examen_estoma'
       }
     },
-    mucocele: {
+    mucocele_piso_boca: {
       type: DataTypes.ENUM('Si','No'),
-      allowNull: false
+      allowNull: false,
+      field: 'mucocele'
     },
     ranula: {
       type: DataTypes.ENUM('Si','No'),
@@ -27,13 +28,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false
     },
-    aftas: {
+    aftas_piso_boca: {
       type: DataTypes.ENUM('Si','No'),
-      allowNull: false
+      allowNull: false,
+      field: 'aftas'
     },
-    otro: {
+    otro_piso_boca: {
       type: DataTypes.STRING(45),
-      allowNull: true
+      allowNull: true,
+      field: 'otro'
     }
   }, {
     sequelize,

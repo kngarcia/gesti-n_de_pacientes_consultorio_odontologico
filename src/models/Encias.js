@@ -9,7 +9,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     id_intra_oral: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'IntraOral',
+        key: 'id_intra_oral'
+      }
     },
     sana: {
       type: DataTypes.ENUM('Si','No'),

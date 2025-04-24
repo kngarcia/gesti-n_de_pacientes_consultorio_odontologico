@@ -27,9 +27,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false
     },
-    otro: {
+    otro_maxilares: {
       type: DataTypes.STRING(45),
-      allowNull: true
+      allowNull: true,
+      field: 'otro'
     }
   }, {
     sequelize,

@@ -45,14 +45,16 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: "No"
     },
-    otros: {
+    otros_antecedentes_toxicologicos: {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false,
-      defaultValue: "No"
+      defaultValue: "No",
+      field: 'otros'
     },
-    descripcion_otros: {
+    descripcion_otros_antecedentes_toxicologicos: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
+      field: 'descripcion_otros'
     }
   }, {
     sequelize,
