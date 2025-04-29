@@ -6,6 +6,9 @@ const Odontograma = ({ onBack }) => {
   const [mostrarExamenEstomatologico, setMostrarExamenEstomatologico] =
     useState(false);
 
+  // 🆔 ID del examen clínico válido (ya creado en tu base de datos)
+  const id_examen_clinico = 2;
+
   useEffect(() => {
     const loadScript = (src) => {
       return new Promise((resolve, reject) => {
@@ -68,7 +71,6 @@ const Odontograma = ({ onBack }) => {
             "Especificaciones..."
           );
 
-          // Guardar engine en window para acceder después
           window.odontogramaEngine = engine;
         } else {
           console.error("❌ window.Engine no está disponible");
@@ -81,22 +83,78 @@ const Odontograma = ({ onBack }) => {
     loadEngine();
   }, []);
 
+  const mapZona = (zona) => {
+    const zonasValidas = [
+      "mesial",
+      "distal",
+      "oclusal",
+      "lingual",
+      "vestibular",
+      "general",
+    ];
+    return zonasValidas.includes(zona) ? zona : "general";
+  };
+
+  const mapAfectacion = (afectacion) => {
+    const afectacionesValidas = [
+      "Caries",
+      "Corona",
+      "Corona (Tmp)",
+      "Faltante",
+      "Fractura",
+      "Diastema",
+      "Relleno",
+      "Rem Prost",
+      "A la deriva",
+      "Rotación",
+      "Fusión",
+      "Resto de raíz",
+      "Erupción",
+      "Transposición",
+      "Supernumerario",
+      "Pulp",
+      "Prótesis",
+      "Tornillo",
+      "Fixed Ortho",
+      "Fixed Prost",
+      "Implante",
+      "Macrodoncia",
+      "Microdoncia",
+      "Discrómico",
+      "Gastado",
+      "Semi Impactado",
+      "Intrusión",
+      "Edentulismo",
+      "Ectópico",
+      "Impactado",
+      "Rem Orthodo",
+      "Extrusión",
+      "Post",
+    ];
+    return afectacionesValidas.includes(afectacion) ? afectacion : "Caries";
+  };
+
   const handleSiguiente = async () => {
     try {
       const engine = window.odontogramaEngine;
       if (!engine) throw new Error("Motor de odontograma no disponible");
 
-      // Obtener los datos que el motor guardó (esto debe coincidir con tu lógica interna)
-      const dientes = engine.exportDentalStatus(); // debes tener esta función en tu engine
+      const dientesRaw = engine.exportDentalStatus();
 
-      // Ejemplo estático de ID de examen clínico
-      const id_examen_clinico = 12;
+      const dientes = dientesRaw.map((d) => ({
+        numero: d.numero,
+        zona: mapZona(d.zona),
+        afectacion: mapAfectacion(d.afectacion),
+        observacion: d.observacion || "",
+      }));
 
-      await guardarOdontograma(id_examen_clinico, dientes);
+      const respuesta = await guardarOdontograma(id_examen_clinico, dientes);
+      console.log("✅ Respuesta del backend:", respuesta);
+
       setMostrarExamenEstomatologico(true);
     } catch (error) {
+      console.error("❌ Error al guardar el odontograma:", error);
       alert("❌ Ocurrió un error al guardar el odontograma.");
-      console.error(error);
     }
   };
 
@@ -130,7 +188,7 @@ const Odontograma = ({ onBack }) => {
           </button>
           <button
             type="button"
-            onClick={() => setMostrarExamenEstomatologico(true)}
+            onClick={handleSiguiente}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
           >
             Siguiente

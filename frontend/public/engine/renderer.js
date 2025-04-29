@@ -1,24 +1,9 @@
-/* 
- * Copyright (c) 2018 Bardur Thomsen <https://github.com/bardurt>.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Bardur Thomsen <https://github.com/bardurt> - initial API and implementation and/or initial documentation
- */
-
-/**
- * Helper class for drawing items on a canvas
- * @returns {Renderer}
- */
 function Renderer() {
-    "use strict";
-    this.context = null;
-    this.width = 0;
-    this.height = 0;
-    this.settings = null;
+  "use strict";
+  this.context = null;
+  this.width = 0;
+  this.height = 0;
+  this.settings = null;
 }
 
 /**
@@ -26,24 +11,27 @@ function Renderer() {
  * @returns {undefined}
  */
 Renderer.prototype.drawSplash = function () {
-    "use strict";
+  "use strict";
 
-    this.context.fillStyle = "#ffffff";
-    this.context.fillRect(0, 0, this.width, this.height);
+  this.context.fillStyle = "#ffffff";
+  this.context.fillRect(0, 0, this.width, this.height);
 
-    this.context.beginPath();
-    this.context.textAlign = 'center';
-    this.context.fillStyle = "#000000";
-    this.context.font = "32px Arial Bold";
-    this.context.fillText("OdontoGraph", this.width / 2,
-            this.height / 2 - 16);
+  this.context.beginPath();
+  this.context.textAlign = "center";
+  this.context.fillStyle = "#000000";
+  this.context.font = "32px Arial Bold";
+  this.context.fillText("OdontoGraph", this.width / 2, this.height / 2 - 16);
 
-    this.context.font = "24px Arial Bold";
-    this.context.fillStyle = "#000000";
+  this.context.font = "24px Arial Bold";
+  this.context.fillStyle = "#000000";
 
-    var year = new Date().getFullYear();
+  var year = new Date().getFullYear();
 
-    this.context.fillText("Bardur Thomsen - " + year, this.width / 2, this.height / 2 + 40);
+  this.context.fillText(
+    "Jvaldes23 - " + year,
+    this.width / 2,
+    this.height / 2 + 40
+  );
 };
 
 /**
@@ -52,14 +40,13 @@ Renderer.prototype.drawSplash = function () {
  * @returns {undefined}
  */
 Renderer.prototype.init = function (canvas) {
-    "use strict";
+  "use strict";
 
-    this.context = canvas.getContext('2d');
-    this.width = canvas.width;
-    this.height = canvas.height;
+  this.context = canvas.getContext("2d");
+  this.width = canvas.width;
+  this.height = canvas.height;
 
-
-    this.drawSplash();
+  this.drawSplash();
 };
 
 /**
@@ -68,21 +55,22 @@ Renderer.prototype.init = function (canvas) {
  * @returns {undefined}
  */
 Renderer.prototype.clear = function (settings) {
-    "use strict";
-    // clear the canvas
-    if (settings.DEBUG) {
-        this.context.fillStyle = "#e6fff3";
-    } else {
-        this.context.fillStyle = "#ffffff";
-    }
+  "use strict";
+  // clear the canvas
+  if (settings.DEBUG) {
+    this.context.fillStyle = "#e6fff3";
+  } else {
+    this.context.fillStyle = "#ffffff";
+  }
 
-    this.context.fillRect(0,
-            0,
-            this.context.canvas.width,
-            this.context.canvas.height);
+  this.context.fillRect(
+    0,
+    0,
+    this.context.canvas.width,
+    this.context.canvas.height
+  );
 
-    this.context.restore();
-
+  this.context.restore();
 };
 
 /**
@@ -93,13 +81,11 @@ Renderer.prototype.clear = function (settings) {
  * @returns {undefined}
  */
 Renderer.prototype.render = function (data, settings, constants) {
-    "use strict";
-    // draw the teeth
-    for (var i = 0; i < data.length; i++) {
-
-        data[i].render(this.context, settings, constants);
-    }
-
+  "use strict";
+  // draw the teeth
+  for (var i = 0; i < data.length; i++) {
+    data[i].render(this.context, settings, constants);
+  }
 };
 
 /**
@@ -111,82 +97,85 @@ Renderer.prototype.render = function (data, settings, constants) {
  * @returns {undefined}
  */
 Renderer.prototype.renderText = function (text, x, y, color) {
-    "use strict";
-    if (color === undefined) {
-        color = "#000000"; // default color = black
-    }
+  "use strict";
+  if (color === undefined) {
+    color = "#000000"; // default color = black
+  }
 
-    this.context.textAlign = 'left';
-    this.context.fillStyle = color;
-    this.context.fillText(text, x, y);
-    this.context.restore();
+  this.context.textAlign = "left";
+  this.context.fillStyle = color;
+  this.context.fillText(text, x, y);
+  this.context.restore();
 };
 
 Renderer.prototype.renderText14 = function (text, x, y, color) {
-    "use strict";
-    if (color === undefined) {
-        color = "#000000"; // default color = black
-    }
+  "use strict";
+  if (color === undefined) {
+    color = "#000000"; // default color = black
+  }
 
-    this.context.font = "14px Arial";
+  this.context.font = "14px Arial";
 
-    this.context.textAlign = 'left';
-    this.context.fillStyle = color;
-    this.context.fillText(text, x, y);
-    this.context.restore();
+  this.context.textAlign = "left";
+  this.context.fillStyle = color;
+  this.context.fillText(text, x, y);
+  this.context.restore();
 };
 
+Renderer.prototype.renderNameValueTabbed = function (
+  name,
+  value,
+  tab,
+  x,
+  y,
+  color
+) {
+  "use strict";
 
-Renderer.prototype.renderNameValueTabbed = function (name, value, tab, x, y, color) {
-    "use strict";
+  this.context.font = "14px Arial";
 
-    this.context.font = "14px Arial";
+  if (color === undefined) {
+    color = "#000000"; // default color = black
+  }
 
-    if (color === undefined) {
-        color = "#000000"; // default color = black
-    }
+  var text = name;
 
-    var text = name;
+  for (var i = 0; i < tab; i++) {
+    text += "\t";
+  }
 
-    for (var i = 0; i < tab; i++) {
-        text += "\t";
-    }
+  text += value;
 
-    text += value;
-
-    this.context.textAlign = 'left';
-    this.context.fillStyle = color;
-    this.context.fillText(text, x, y);
-    this.context.restore();
+  this.context.textAlign = "left";
+  this.context.fillStyle = color;
+  this.context.fillText(text, x, y);
+  this.context.restore();
 };
 
 Renderer.prototype.renderTextCenter = function (text, x, y, color) {
-    "use strict";
-    if (color === undefined) {
-        color = "#000000"; // default color = black
-    }
+  "use strict";
+  if (color === undefined) {
+    color = "#000000"; // default color = black
+  }
 
-
-
-    this.context.textAlign = 'center';
-    this.context.fillStyle = color;
-    this.context.fillText(text, x, y);
-    this.context.restore();
+  this.context.textAlign = "center";
+  this.context.fillStyle = color;
+  this.context.fillText(text, x, y);
+  this.context.restore();
 };
 
 Renderer.prototype.renderTextCenter16 = function (text, x, y, color) {
-    "use strict";
-    if (color === undefined) {
-        color = "#000000"; // default color = black
-    }
+  "use strict";
+  if (color === undefined) {
+    color = "#000000"; // default color = black
+  }
 
-    this.context.font = "16px Arial Bold";
-    this.context.textAlign = 'center';
-    this.context.fillStyle = color;
-    this.context.fillText(text, x, y);
-    this.context.restore();
+  this.context.font = "16px Arial Bold";
+  this.context.textAlign = "center";
+  this.context.fillStyle = color;
+  this.context.fillText(text, x, y);
+  this.context.restore();
 };
-
 
 /**
  * Method to set app settings to the renderer
@@ -194,72 +183,66 @@ Renderer.prototype.renderTextCenter16 = function (text, x, y, color) {
  * @returns {undefined}
  */
 Renderer.prototype.setSettings = function (settings) {
-    "use strict";
-    this.settings = settings;
+  "use strict";
+  this.settings = settings;
 };
-
 
 /**
  * Method to change the size of the canvas
  * @param {type} width new width of the canvas
  * @param {type} height new height of the canvas
- * @returns {void} 
+ * @returns {void}
  */
 Renderer.prototype.setCanvasSize = function (width, height) {
-
-    this.context.canvas.width = width;
-    this.context.canvas.height = height;
-
+  this.context.canvas.width = width;
+  this.context.canvas.height = height;
 };
 
+Renderer.prototype.wrapText = function (
+  text,
+  x,
+  y,
+  maxWidth,
+  lineHeight,
+  maxLines
+) {
+  var input = text.toString();
 
-Renderer.prototype.wrapText = function (text, x, y, maxWidth, lineHeight, maxLines) {
+  var words = input.split(" ");
 
-    var input = text.toString();
+  var line = "";
 
-    var words = input.split(" ");
+  var lineNumber = 1;
 
-    var line = "";
+  for (var n = 0; n < words.length; n++) {
+    var testLine = line + words[n] + " ";
 
-    var lineNumber = 1;
+    var metrics = this.context.measureText(testLine);
 
-    for (var n = 0; n < words.length; n++) {
+    var testWidth = metrics.width;
 
-        var testLine = line + words[n] + " ";
+    if (testWidth > maxWidth && n > 0) {
+      this.renderText(line, x, y, "#000000");
+      //this.context.fillText(line, x, y);
 
-        var metrics = this.context.measureText(testLine);
+      line = words[n] + " ";
 
-        var testWidth = metrics.width;
+      y += lineHeight;
 
-        if (testWidth > maxWidth && n > 0) {
-
-            this.renderText(line, x, y, "#000000");
-            //this.context.fillText(line, x, y);
-
-            line = words[n] + " ";
-
-            y += lineHeight;
-
-            lineNumber++;
-
-        } else {
-
-            line = testLine;
-
-        }
-
-        if (lineNumber > maxLines) {
-            break;
-        }
+      lineNumber++;
+    } else {
+      line = testLine;
     }
 
-    this.renderText(line, x, y, "#000000");
-//    this.context.fillText(line, x, y);
+    if (lineNumber > maxLines) {
+      break;
+    }
+  }
 
+  this.renderText(line, x, y, "#000000");
+  //    this.context.fillText(line, x, y);
 };
 
 Renderer.prototype.drawImage = function (src, x, y, width, height) {
-
-    this.context.drawImage(src, x, y, width, height);
-
+  this.context.drawImage(src, x, y, width, height);
 };
