@@ -19,13 +19,15 @@ const usuarioRoutes = require("./routes/usuarios");
 const citasRoutes = require("./routes/citas");
 const authRoutes = require("./routes/authRoutes");
 const odontogramaRoutes = require("./routes/odontograma");
+const examenClinicoRoutes = require("./routes/examenClinico");
 
 // 🔹 Usamos las rutas
 app.use("/api/pacientes", pacientesRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/citas", citasRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/odontograma", odontogramaRoutes);
+app.use("/api/odontograma", odontogramaRoutes);
+app.use("/api/examenes", examenClinicoRoutes);
 
 // 🔹  Ruta raíz para verificar que el servidor está funcionando correctamente
 app.get("/", (req, res) => {
