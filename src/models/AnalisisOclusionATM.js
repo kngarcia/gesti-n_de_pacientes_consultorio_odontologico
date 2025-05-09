@@ -15,9 +15,10 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_historia'
       }
     },
-    observacioes: {
+    observaciones: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
+      field: 'observacioes'
     }
   }, {
     sequelize,

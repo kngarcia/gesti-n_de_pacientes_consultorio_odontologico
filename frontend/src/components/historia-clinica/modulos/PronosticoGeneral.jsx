@@ -1,4 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import pronosticoService from './PronosticoService';
+import Spinner from '../../Spinner';
+import AlteracionesPulpares from './AlteracionesPulpares';
+import AlteracionesPeriodontales from './AlteracionesPeriodontales';
+import PronosticoEspecifico from './PronosticoEspecifico';
 
 // Lista de dientes (FDI)
 const listaDientesFDI = [
@@ -16,375 +22,198 @@ const listaUbicaciones = [
   'Inferior Izquierdo'
 ];
 
-const PronosticoGeneral = ({ onBack }) => {
-  const [MostrarAnalisisOclusionAtm, setMostrarAnalisisOclusionAtm] = useState(false);
+const PronosticoGeneral = () => {
+  const { patientId } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [existeRegistro, setExisteRegistro] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
-  const [formData, setFormData] = useState({
-    // Pronósticos Específicos (varios dientes)
-    pronosticosEspecificos: [
-      { diente: '', ubicacion: '', pronostico: '', tipoAlteracion: '' }
-    ],
-
-    // Alteraciones Periodontales
-    movilidad: 'No',
-    placaBlanda: 'No',
-    placaCalcificada: 'No',
-    sangrado: 'No',
-    retraccionGingival: 'No',
-
-    // Alteraciones Pulpares
-    pulparCambioColor: '',
-    pulparFistula: '',
-    pulparSintomatologia: '', // "sintomatico" o "asintomatico"
-    pulparObservaciones: '',
-
-    // Observaciones generales
-    observaciones: ''
-  });
-
-  // Maneja cambios de campos simples (no arrays)
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const initialData = {
+    alteracionesPulpares: {
+      cambio_color: '',
+      fistula: '',
+      sintomatico: 'No',
+      asintomatico: 'No',
+      observaciones: ''
+    },
+    alteracionesPeriodontales: {
+      movilidad: 'No',
+      placa_blanda: 'No',
+      placa_calcificada: 'No',
+      sangrado: 'No',
+      retraccion_gingival: 'No',
+      observaciones: ''
+    },
+    pronosticosEspecificos: []
   };
 
-  // Maneja cambios en pronósticos específicos
-  const handlePronosticoEspecificoChange = (index, e) => {
-    const { name, value } = e.target;
-    const newPronosticos = [...formData.pronosticosEspecificos];
-    newPronosticos[index][name] = value;
-    setFormData({ ...formData, pronosticosEspecificos: newPronosticos });
+  const [formData, setFormData] = useState(initialData);
+
+  useEffect(() => {
+    const cargarDatos = async () => {
+      try {
+        const res = await pronosticoService.obtenerTodo(patientId);
+        const data = res.data !== undefined ? res.data : res;
+        console.log('Normalized data:', data);
+
+        setFormData({
+          alteracionesPulpares:      data.pulpares      || initialData.alteracionesPulpares,
+          alteracionesPeriodontales: data.periodontales || initialData.alteracionesPeriodontales,
+          pronosticosEspecificos:    data.pronosticos   || initialData.pronosticosEspecificos
+        });
+
+        setExisteRegistro(
+          Boolean(
+            data.pulpares ||
+            data.periodontales ||
+            (data.pronosticos && data.pronosticos.length > 0)
+          )
+        );
+        setEditMode(false);
+      } catch (err) {
+        console.error('Error cargando datos:', err);
+        setError('Error cargando datos');
+        setEditMode(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (patientId) cargarDatos();
+  }, [patientId]);
+
+  const handleChange = (seccion, campo, valor) => {
+    setFormData(prev => ({
+      ...prev,
+      [seccion]: {
+        ...prev[seccion],
+        [campo]: valor
+      }
+    }));
   };
 
-  // Agregar pronóstico extra
+  const handlePronosticoChange = (index, { name, value }) => {
+    const nuevos = [...formData.pronosticosEspecificos];
+    nuevos[index] = { ...nuevos[index], [name]: value };
+    setFormData(prev => ({ ...prev, pronosticosEspecificos: nuevos }));
+  };
+
   const agregarPronostico = () => {
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       pronosticosEspecificos: [
-        ...formData.pronosticosEspecificos,
-        { diente: '', ubicacion: '', pronostico: '', tipoAlteracion: '' }
+        ...prev.pronosticosEspecificos,
+        { diente: '', ubicacion: '', tipo_alteracion: '', pronostico: '' }
       ]
-    });
+    }));
   };
 
-  // Eliminar pronóstico
-  const removerPronostico = (index) => {
-    const newPronosticos = [...formData.pronosticosEspecificos];
-    newPronosticos.splice(index, 1);
-    setFormData({ ...formData, pronosticosEspecificos: newPronosticos });
+  const removerPronostico = index => {
+    setFormData(prev => ({
+      ...prev,
+      pronosticosEspecificos: prev.pronosticosEspecificos.filter((_, i) => i !== index)
+    }));
   };
 
-  // Filas “Sí/No” para alteraciones periodontales
-  const createPeriodontalRow = (label, name) => (
-    <tr key={name}>
-      <td className="py-2 px-3 text-gray-700">{label}</td>
-      <td className="py-2 px-3 text-center">
-        <input
-          type="radio"
-          name={name}
-          value="Si"
-          checked={formData[name] === 'Si'}
-          onChange={handleChange}
-          className="form-radio h-4 w-4 border-gray-300 text-blue-600"
-        />
-      </td>
-      <td className="py-2 px-3 text-center">
-        <input
-          type="radio"
-          name={name}
-          value="No"
-          checked={formData[name] === 'No'}
-          onChange={handleChange}
-          className="form-radio h-4 w-4 border-gray-300 text-blue-600"
-        />
-      </td>
-    </tr>
-  );
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    console.log('Datos Pronóstico y Alteraciones:', formData);
-    // Lógica de guardado o redirección
+    setLoading(true);
+    try {
+      const payload = {
+        pulpares: formData.alteracionesPulpares,
+        periodontales: formData.alteracionesPeriodontales,
+        pronosticos: formData.pronosticosEspecificos
+      };
+      const fn = existeRegistro ? 'actualizar' : 'crear';
+      const response = await pronosticoService[fn](patientId, payload);
+      if ([200, 201].includes(response.status)) {
+        setSuccess(existeRegistro ? 'Datos actualizados' : 'Datos guardados');
+        setExisteRegistro(true);
+        setEditMode(false);
+      }
+    } catch (err) {
+      console.error('Error guardando datos:', err);
+      setError(err.response?.data?.message || 'Error guardando datos');
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
+  if (loading) return <Spinner />;
+
   return (
-    <div className="w-full min-h-screen p-6">
-      {/* Encabezado */}
-      <div className="flex justify-between items-center mb-8">
-        {onBack && (
-          <button
-            onClick={onBack}
-            className="flex items-center text-blue-600 hover:text-blue-800"
-          >
-            <svg
-              className="w-4 h-4 mr-1"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Atrás
-          </button>
-        )}
-        <h2 className="text-2xl font-bold text-gray-800">
-          Alteraciones y Pronóstico  
-        </h2>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-
-        {/* Alteraciones en 2 columnas: Periodontales y Pulpares */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Columna Izquierda: Periodontales */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">
-              Alteraciones Periodontales
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="py-2 px-3 text-gray-700 font-semibold text-left w-1/2">
-                      Condición
-                    </th>
-                    <th className="py-2 px-3 text-gray-700 font-semibold text-center w-1/4">
-                      Sí
-                    </th>
-                    <th className="py-2 px-3 text-gray-700 font-semibold text-center w-1/4">
-                      No
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {createPeriodontalRow('Movilidad', 'movilidad')}
-                  {createPeriodontalRow('Placa Blanda', 'placaBlanda')}
-                  {createPeriodontalRow('Placa Calcificada', 'placaCalcificada')}
-                  {createPeriodontalRow('Sangrado', 'sangrado')}
-                  {createPeriodontalRow('Retracción Gingival', 'retraccionGingival')}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Columna Derecha: Pulpares */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">
-              Alteraciones Pulpares
-            </h3>
-            {/* CAMBIO DE COLOR */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-1">
-                Cambio de Color
-              </label>
-              <input
-                type="text"
-                name="pulparCambioColor"
-                value={formData.pulparCambioColor}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded p-2"
-                placeholder="Ej: Oscurecimiento..."
-              />
-            </div>
-            {/* FÍSTULA */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-1">
-                Fístula
-              </label>
-              <input
-                type="text"
-                name="pulparFistula"
-                value={formData.pulparFistula}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded p-2"
-                placeholder="Ej: Fístula presente..."
-              />
-            </div>
-            {/* Sintomático / Asintomático */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-1">
-                Sintomatología
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center space-x-1 text-gray-700">
-                  <input
-                    type="radio"
-                    name="pulparSintomatologia"
-                    value="sintomatico"
-                    checked={formData.pulparSintomatologia === 'sintomatico'}
-                    onChange={handleChange}
-                    className="form-radio h-5 w-5 border-2 border-gray-300 text-blue-600"
-                  />
-                  <span className="text-sm">Sintomático</span>
-                </label>
-                <label className="flex items-center space-x-1 text-gray-700">
-                  <input
-                    type="radio"
-                    name="pulparSintomatologia"
-                    value="asintomatico"
-                    checked={formData.pulparSintomatologia === 'asintomatico'}
-                    onChange={handleChange}
-                    className="form-radio h-5 w-5 border-2 border-gray-300 text-blue-600"
-                  />
-                  <span className="text-sm">Asintomático</span>
-                </label>
-              </div>
-            </div>
-            {/* Observaciones Pulpares */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-1">
-                Observaciones Pulpares
-              </label>
-              <textarea
-                name="pulparObservaciones"
-                rows="3"
-                value={formData.pulparObservaciones}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Notas adicionales sobre la pulpa..."
-              ></textarea>
-            </div>
-          </div>
-        </div>
-
-        {/* Observaciones Generales (opcional) + Pronóstico Específico */}
-        <div>
-          {/* Pronóstico Específico */}
-          <div className="border-b pb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Pronóstico Específico
-            </h3>
-  
-            {formData.pronosticosEspecificos.map((item, index) => (
-              <div key={index} className="grid grid-cols-1 sm:grid-cols-4 gap-4 max-w-4xl mb-4">
-                
-                {/* Select Diente */}
-                <div>
-                  <label className="block text-gray-700 mb-1">
-                    Diente
-                  </label>
-                  <select
-                    name="diente"
-                    value={item.diente}
-                    onChange={(e) => handlePronosticoEspecificoChange(index, e)}
-                    className="w-full border border-gray-300 rounded p-2"
-                  >
-                    <option value="">-- Selecciona --</option>
-                    {listaDientesFDI.map((num) => (
-                      <option key={num} value={num}>{num}</option>
-                    ))}
-                  </select>
-                </div>
-  
-                {/* Select Ubicación */}
-                <div>
-                  <label className="block text-gray-700 mb-1">
-                    Ubicación
-                  </label>
-                  <select
-                    name="ubicacion"
-                    value={item.ubicacion}
-                    onChange={(e) => handlePronosticoEspecificoChange(index, e)}
-                    className="w-full border border-gray-300 rounded p-2"
-                  >
-                    <option value="">-- Selecciona --</option>
-                    {listaUbicaciones.map((loc) => (
-                      <option key={loc} value={loc}>{loc}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Nuevo campo: Tipo de Alteración */}
-                <div>
-                  <label className="block text-gray-700 mb-1">
-                    Tipo de Alteración
-                  </label>
-                  <select
-                    name="tipoAlteracion"
-                    value={item.tipoAlteracion}
-                    onChange={(e) => handlePronosticoEspecificoChange(index, e)}
-                    className="w-full border border-gray-300 rounded p-2"
-                  >
-                    <option value="">-- Selecciona --</option>
-                    <option value="periodontal">Periodontal</option>
-                    <option value="pulpar">Pulpar</option>
-                    <option value="periodontal y pulpar">Periodontal y Pulpar</option>
-                  </select>
-                </div>
-  
-                {/* Pronóstico */}
-                <div>
-                  <label className="block text-gray-700 mb-1">
-                    Pronóstico
-                  </label>
-                  <input
-                    type="text"
-                    name="pronostico"
-                    value={item.pronostico}
-                    onChange={(e) => handlePronosticoEspecificoChange(index, e)}
-                    className="w-full border border-gray-300 rounded p-2"
-                    placeholder="Favorable / Reservado..."
-                  />
-                </div>
-  
-                {/* Botón Eliminar si hay más de 1 pronóstico */}
-                {formData.pronosticosEspecificos.length > 1 && (
-                  <div className="col-span-4 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => removerPronostico(index)}
-                      className="text-sm px-3 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-  
-            {/* Botón para agregar otro pronóstico */}
+    <div className="w-full min-h-screen p-6 bg-gray-50">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Pronóstico y Alteraciones</h2>
+          {!editMode && (
             <button
-              type="button"
-              onClick={agregarPronostico}
-              className="text-sm px-4 py-2 rounded bg-green-100 text-green-700 hover:bg-green-200"
+              onClick={() => setEditMode(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              + Agregar Otro Pronóstico
-            </button>
-          </div>
-
-          <label className="block text-gray-700 font-semibold mb-2">
-            Observaciones Generales
-          </label>
-          <textarea
-            name="observaciones"
-            rows="3"
-            value={formData.observaciones}
-            onChange={handleChange}
-            placeholder="Ingresa cualquier observación adicional..."
-            className="w-full max-w-2xl border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ></textarea>
-        </div>
-
-        {/* Botones de Acción */}
-        <div className="flex justify-end gap-4 pt-6 border-t">
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              className="px-5 py-2.5 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Atrás
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+              </svg>
+              {existeRegistro ? 'Editar Pronóstico' : 'Crear Registro'}
             </button>
           )}
-          <button
-            type="button"
-            onClick={() => setMostrarAnalisisOclusionAtm(true)}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          >
-            Siguiente
-          </button>
         </div>
-      </form>
+
+        {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">{error}</div>}
+        {success && <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg">{success}</div>}
+
+        {!editMode ? (
+          existeRegistro ? (
+            <div className="space-y-6">
+              <AlteracionesPulpares data={formData.alteracionesPulpares} readOnly />
+              <AlteracionesPeriodontales data={formData.alteracionesPeriodontales} readOnly />
+              <PronosticoEspecifico
+                data={formData.pronosticosEspecificos}
+                listaDientes={listaDientesFDI}
+                listaUbicaciones={listaUbicaciones}
+                readOnly
+              />
+            </div>
+          ) : (
+            <div className="bg-yellow-50 p-4 rounded-lg text-yellow-700">No se han registrado datos</div>
+          )
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <AlteracionesPulpares
+              data={formData.alteracionesPulpares}
+              onChange={(campo, valor) => handleChange('alteracionesPulpares', campo, valor)}
+            />
+            <AlteracionesPeriodontales
+              data={formData.alteracionesPeriodontales}
+              onChange={(campo, valor) => handleChange('alteracionesPeriodontales', campo, valor)}
+            />
+            <PronosticoEspecifico
+              data={formData.pronosticosEspecificos}
+              onAdd={agregarPronostico}
+              onChange={handlePronosticoChange}
+              onRemove={removerPronostico}
+              listaDientes={listaDientesFDI}
+              listaUbicaciones={listaUbicaciones}
+            />
+            <div className="flex justify-end gap-4">
+              <button type="button" onClick={() => setEditMode(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-100">
+                Cancelar
+              </button>
+              <button type="submit" 
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
+                </svg>
+
+                {existeRegistro ? 'Actualizar' : 'Guardar'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 };

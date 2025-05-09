@@ -23,9 +23,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false
     },
-    'limitación_apertura': {
+    limitacion_apertura: {
       type: DataTypes.ENUM('Si','No'),
-      allowNull: false
+      allowNull: false,
+      field: 'limitación_apertura'
     }
   }, {
     sequelize,

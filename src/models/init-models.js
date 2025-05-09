@@ -85,11 +85,11 @@ function initModels(sequelize) {
   Encias.belongsTo(IntraOral, { as: "id_intra_oral_IntraOral", foreignKey: "id_intra_oral"});
   IntraOral.hasOne(Encias, { as: "Encias", foreignKey: "id_intra_oral"});
   AnomaliasATM.belongsTo(AnalisisOclusionATM, { as: "id_oclusion_AnalisisOclusionATM", foreignKey: "id_oclusion"});
-  AnalisisOclusionATM.hasMany(AnomaliasATM, { as: "AnomaliasATMs", foreignKey: "id_oclusion"});
+  AnalisisOclusionATM.hasOne(AnomaliasATM, { as: "AnomaliasATMs", foreignKey: "id_oclusion"});
   PlanoFrontal.belongsTo(AnalisisOclusionATM, { as: "id_oclusion_AnalisisOclusionATM", foreignKey: "id_oclusion"});
-  AnalisisOclusionATM.hasMany(PlanoFrontal, { as: "PlanoFrontals", foreignKey: "id_oclusion"});
+  AnalisisOclusionATM.hasOne(PlanoFrontal, { as: "PlanoFrontals", foreignKey: "id_oclusion"});
   PlanoHorizontal.belongsTo(AnalisisOclusionATM, { as: "id_oclusion_AnalisisOclusionATM", foreignKey: "id_oclusion"});
-  AnalisisOclusionATM.hasMany(PlanoHorizontal, { as: "PlanoHorizontals", foreignKey: "id_oclusion"});
+  AnalisisOclusionATM.hasOne(PlanoHorizontal, { as: "PlanoHorizontals", foreignKey: "id_oclusion"});
   AntecedentesEstomatologicos.belongsTo(Antecedentes, { as: "id_antecedente_Antecedente", foreignKey: "id_antecedente"});
   Antecedentes.hasOne(AntecedentesEstomatologicos, { as: "AntecedentesEstomatologicos", foreignKey: "id_antecedente"});
   AntecedentesFamiliares.belongsTo(Antecedentes, { as: "id_antecedente_Antecedente", foreignKey: "id_antecedente"});
@@ -123,9 +123,9 @@ function initModels(sequelize) {
   labios.belongsTo(ExamenEstomatologico, { as: "id_examen_estoma_ExamenEstomatologico", foreignKey: "id_examen_estoma"});
   ExamenEstomatologico.hasMany(labios, { as: "labios", foreignKey: "id_examen_estoma"});
   AlteracionesPeriodontales.belongsTo(HistoriaClinica, { as: "id_historia_HistoriaClinica", foreignKey: "id_historia"});
-  HistoriaClinica.hasMany(AlteracionesPeriodontales, { as: "AlteracionesPeriodontales", foreignKey: "id_historia"});
+  HistoriaClinica.hasOne(AlteracionesPeriodontales, { as: "AlteracionesPeriodontales", foreignKey: "id_historia"});
   AlteracionesPulpares.belongsTo(HistoriaClinica, { as: "id_historia_HistoriaClinica", foreignKey: "id_historia"});
-  HistoriaClinica.hasMany(AlteracionesPulpares, { as: "AlteracionesPulpares", foreignKey: "id_historia"});
+  HistoriaClinica.hasOne(AlteracionesPulpares, { as: "AlteracionesPulpares", foreignKey: "id_historia"});
   AnalisisOclusionATM.belongsTo(HistoriaClinica, { as: "id_historia_HistoriaClinica", foreignKey: "id_historia"});
   HistoriaClinica.hasMany(AnalisisOclusionATM, { as: "AnalisisOclusionATMs", foreignKey: "id_historia"});
   Antecedentes.belongsTo(HistoriaClinica, { as: "id_historia_HistoriaClinica", foreignKey: "id_historia"});

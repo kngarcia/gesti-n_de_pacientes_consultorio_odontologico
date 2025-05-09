@@ -26,6 +26,8 @@ const Antecedentes = ({ onBack }) => {
         setNotFound(false);
         
         const data = await antecedentesService.getAntecedentesByPacienteId(patientId);
+
+        console.log('Datos de antecedentes:', data);
         
         if (data === null) {
           setNotFound(true);
@@ -35,13 +37,13 @@ const Antecedentes = ({ onBack }) => {
 
         setAntecedentes(data);
         setFormData({
-          antecedentesFamiliares: data.antecedentesFamiliares || INITIAL_FORM_DATA.antecedentesFamiliares,
-          antecedentesPatologicos: data.antecedentesPatologicos || INITIAL_FORM_DATA.antecedentesPatologicos,
-          antecedentesToxixologicos: data.antecedentesToxixologicos || INITIAL_FORM_DATA.antecedentesToxixologicos,
-          antecedentesGinecoobtetricos: data.antecedentesGinecoobtetricos || INITIAL_FORM_DATA.antecedentesGinecoobtetricos,
-          antecedentesEstomatologicos: data.antecedentesEstomatologicos || INITIAL_FORM_DATA.antecedentesEstomatologicos,
-          antecedentesHospitalarios: data.antecedentesHospitalarios || INITIAL_FORM_DATA.antecedentesHospitalarios,
-          antecedentesOdontologicos: data.antecedentesOdontologicos || INITIAL_FORM_DATA.antecedentesOdontologicos
+          antecedentesFamiliares: data.AntecedentesFamiliares || INITIAL_FORM_DATA.antecedentesFamiliares,
+          antecedentesPatologicos: data.AntecedentesPatologicos || INITIAL_FORM_DATA.antecedentesPatologicos,
+          antecedentesToxixologicos: data.AntecedentesToxixologicos || INITIAL_FORM_DATA.antecedentesToxixologicos,
+          antecedentesGinecoobtetricos: data.AntecedentesGinecoobtetricos || INITIAL_FORM_DATA.antecedentesGinecoobtetricos,
+          antecedentesEstomatologicos: data.AntecedentesEstomatologicos || INITIAL_FORM_DATA.antecedentesEstomatologicos,
+          antecedentesHospitalarios: data.AntecedentesHospitalarios || INITIAL_FORM_DATA.antecedentesHospitalarios,
+          antecedentesOdontologicos: data.AntecedentesOdontologicos || INITIAL_FORM_DATA.antecedentesOdontologicos
         });
       } catch (err) {
         setError(err.message);

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Tabs, Tab, Box } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Importar el ícono
 
 const HistoriaLayout = () => {
   const { patientId } = useParams();
@@ -13,9 +14,12 @@ const HistoriaLayout = () => {
     { label: 'Antecedentes', path: 'antecedentes' },
     { label: 'Frecuencia Cepillado', path: 'frecuencia-cepillado' },
     { label: 'Examen Clinico', path: 'examen-clinico' },
+    { label: 'Odontograma', path: 'odontograma' },
     { label: 'Examen Estomatologico', path: 'examen-estomatologico' },
     { label: 'Diagnostico General', path: 'diagnostico-general' },
     { label: 'Pronostico General', path: 'pronostico-general' },
+    { label: 'Oclusion y ATM', path: 'oclusion-atm' },
+
   ];
 
   // Sincronizar la pestaña activa con la URL
@@ -36,15 +40,32 @@ const HistoriaLayout = () => {
     navigate(`/pacientes/${patientId}/historia-clinica/${tabs[newValue].path}`);
   };
 
+  // Navegar a detalles del paciente
+  const handleBackToPatient = () => {
+    navigate(`/pacientes/${patientId}`);
+  };
+
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Historia Clínica</h2>
-      
+      {/* Botón de regreso y título */}
+      <div className="flex items-center gap-4 mb-4">
+        <button 
+          onClick={handleBackToPatient}
+          className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          <ArrowBackIcon className="w-5 h-5" />
+          <span>Volver al paciente</span>
+        </button>
+        <h2 className="text-2xl font-bold">Historia Clínica</h2>
+      </div>
+
       {/* Barra de pestañas */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs 
           value={activeTab} 
           onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
           aria-label="Pestañas de historia clínica"
         >
           {tabs.map((tab) => (
@@ -56,6 +77,7 @@ const HistoriaLayout = () => {
             />
           ))}
         </Tabs>
+
       </Box>
 
       {/* Contenido del submódulo activo */}

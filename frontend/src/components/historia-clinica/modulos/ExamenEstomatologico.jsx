@@ -133,6 +133,8 @@ const ExamenEstomatologico = () => {
           setEditMode(true);
           setExamenExistente(false);
         }
+
+        console.log('Datos cargados:', response.data);
       } catch (error) {
         setEditMode(true);
       } finally {
@@ -235,7 +237,7 @@ const ExamenEstomatologico = () => {
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">{error}</div>}
         {success && <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg">{success}</div>}
-
+        
         {!editMode && !examenExistente && (
           <div className="bg-yellow-50 p-4 rounded-lg text-yellow-700">
             <p>No se ha registrado ningún examen estomatológico</p>

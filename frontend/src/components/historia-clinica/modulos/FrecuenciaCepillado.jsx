@@ -151,9 +151,13 @@ const Formulario = ({ formData, opciones, onChange, onSubmit, loading }) => (
       </button>
       <button
         type="submit"
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300"
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
         disabled={loading}
       >
+
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
+        </svg>
         {loading ? <Spinner size="small" /> : 'Guardar'}
       </button>
     </div>
@@ -184,9 +188,12 @@ const Vista = ({ data, opciones, onEdit }) => {
       />
       <button
         onClick={onEdit}
-        className="mt-6 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
-      >
-        Editar Registro
+        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+          </svg>
+          Editar Frecuencia Cepillado
       </button>
     </div>
   );

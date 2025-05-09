@@ -14,6 +14,8 @@ const LazyExamenClinico = lazy(() => import('./components/historia-clinica/modul
 const LazyExamenEstomatologico = lazy(() => import('./components/historia-clinica/modulos/ExamenEstomatologico'));
 const LazyDiagnosticoGeneral = lazy(() => import('./components/historia-clinica/modulos/DiagnosticoGeneral'));
 const LazyPronosticoGeneral = lazy(() => import('./components/historia-clinica/modulos/PronosticoGeneral'));
+const LazyOclusionATM = lazy(() => import('./components/historia-clinica/modulos/OclusionATM'));
+const LazyOdontograma = lazy(() => import('./components/historia-clinica/modulos/Odontograma'));
 function App() {
   const { isAuthenticated, loading } = useAuth();
 
@@ -68,6 +70,15 @@ function App() {
             </Suspense>
           }
         />
+
+        <Route
+          path="odontograma" 
+          element={
+            <Suspense fallback={<Spinner />}>
+              <LazyOdontograma />
+            </Suspense>
+          }
+        />
         <Route 
           path="examen-estomatologico" 
           element={
@@ -89,6 +100,14 @@ function App() {
           element={
             <Suspense fallback={<Spinner />}>
               <LazyPronosticoGeneral />
+            </Suspense>
+          }
+        />
+        <Route 
+          path="oclusion-atm" 
+          element={
+            <Suspense fallback={<Spinner />}>
+              <LazyOclusionATM />
             </Suspense>
           }
         />

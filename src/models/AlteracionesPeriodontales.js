@@ -31,9 +31,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('Si','No'),
       allowNull: false
     },
-    retraccion_gingibal: {
+    retraccion_gingival: {
       type: DataTypes.ENUM('Si','No'),
-      allowNull: false
+      allowNull: false,
+      field: 'retraccion_gingibal'
     },
     observaciones: {
       type: DataTypes.TEXT,

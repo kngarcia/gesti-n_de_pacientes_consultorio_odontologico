@@ -1,5 +1,24 @@
 import { useState, useEffect } from "react";
 
+const Notificacion = ({ mensaje, tipo, onCerrar }) => {
+  const colores = {
+    exito: "bg-green-100 border-green-400 text-green-700",
+    error: "bg-red-100 border-red-400 text-red-700",
+  };
+
+  return (
+    <div className={`${colores[tipo]} border-l-4 p-4 fixed top-4 right-4 min-w-[300px] rounded-lg shadow-lg flex justify-between items-center z-50`}>
+      <span>{mensaje}</span>
+      <button 
+        onClick={onCerrar}
+        className="ml-4 text-xl font-semibold hover:opacity-75"
+      >
+        &times;
+      </button>
+    </div>
+  );
+};
+
 const RegisterPatient = ({ onBack }) => {
   const [formData, setFormData] = useState({
     id_doctora: "",
@@ -26,8 +45,10 @@ const RegisterPatient = ({ onBack }) => {
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [formErrors, setFormErrors] = useState({});
+  const [showNotificacion, setShowNotificacion] = useState(false);
+  const [notificacionMensaje, setNotificacionMensaje] = useState("");
+  const [notificacionTipo, setNotificacionTipo] = useState("exito");
 
-  // Cargar la lista de usuarios (doctores) al montar el componente
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -54,6 +75,15 @@ const RegisterPatient = ({ onBack }) => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    if (showNotificacion) {
+      const timer = setTimeout(() => {
+        setShowNotificacion(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showNotificacion]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -61,7 +91,6 @@ const RegisterPatient = ({ onBack }) => {
       [name]: value
     });
     
-    // Limpiar error al cambiar
     if (formErrors[name]) {
       setFormErrors({
         ...formErrors,
@@ -106,7 +135,9 @@ const RegisterPatient = ({ onBack }) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("No hay token de autenticación, inicia sesión.");
+      setNotificacionMensaje("🔒 No hay sesión activa, inicia sesión");
+      setNotificacionTipo("error");
+      setShowNotificacion(true);
       return;
     }
 
@@ -121,8 +152,10 @@ const RegisterPatient = ({ onBack }) => {
       });
 
       if (response.ok) {
-        alert("Paciente registrado con éxito");
-        // Limpiar formulario
+        setNotificacionMensaje("✅ Paciente registrado con éxito");
+        setNotificacionTipo("exito");
+        setShowNotificacion(true);
+        
         setFormData({
           id_doctora: "",
           nombre_completo: "",
@@ -144,15 +177,18 @@ const RegisterPatient = ({ onBack }) => {
           origen_enfermedad: "",
           motivo_consulta: ""
         });
-        onBack();
+        
+        setTimeout(() => onBack(), 2000);
       } else {
         const errorData = await response.json();
-        console.error("Error en la respuesta del servidor:", errorData);
-        alert(errorData.mensaje || "Error al registrar paciente");
+        setNotificacionMensaje(`❌ ${errorData.mensaje || "Error al registrar paciente"}`);
+        setNotificacionTipo("error");
+        setShowNotificacion(true);
       }
     } catch (error) {
-      console.error("Error al registrar paciente:", error);
-      alert("Ocurrió un error al conectar con el servidor.");
+      setNotificacionMensaje("❌ Error de conexión con el servidor");
+      setNotificacionTipo("error");
+      setShowNotificacion(true);
     }
   };
 
@@ -166,7 +202,15 @@ const RegisterPatient = ({ onBack }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg relative">
+      {showNotificacion && (
+        <Notificacion
+          mensaje={notificacionMensaje}
+          tipo={notificacionTipo}
+          onCerrar={() => setShowNotificacion(false)}
+        />
+      )}
+
       <h2 className="text-2xl font-semibold text-gray-700 mb-6">Registrar Nuevo Paciente</h2>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Campo Doctor Responsable */}
@@ -367,10 +411,6 @@ const RegisterPatient = ({ onBack }) => {
         </div>
 
         <div>
-          
-        </div>
-
-        <div>
           <label className="block text-gray-600 font-medium mb-1">EPS *</label>
           <input
             type="text"
@@ -409,9 +449,6 @@ const RegisterPatient = ({ onBack }) => {
               <span>Beneficiario</span>
             </label>
           </div>
-          {(formErrors.cotizante || formErrors.beneficiario) && (
-            <p className="text-red-500 text-sm mt-1">Debe seleccionar un tipo de afiliación</p>
-          )}
         </div>
 
         <div className="md:col-span-2">

@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('AlteracionesPulpares', {
     id_pulpar: {
@@ -16,12 +17,12 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     cambio_color: {
-      type: DataTypes.ENUM('Si','No'),
-      allowNull: false
+      type: DataTypes.STRING(100),  
+      allowNull: true   
     },
     fistula: {
-      type: DataTypes.ENUM('Si','No'),
-      allowNull: false
+      type: DataTypes.STRING(100),  
+      allowNull: true
     },
     sintomatico: {
       type: DataTypes.ENUM('Si','No'),
@@ -44,17 +45,13 @@ module.exports = function(sequelize, DataTypes) {
         name: "PRIMARY",
         unique: true,
         using: "BTREE",
-        fields: [
-          { name: "id_pulpar" },
-        ]
+        fields: [{ name: "id_pulpar" }]
       },
       {
         name: "fk_pulpares_historia",
         using: "BTREE",
-        fields: [
-          { name: "id_historia" },
-        ]
-      },
+        fields: [{ name: "id_historia" }]
+      }
     ]
   });
 };

@@ -8,6 +8,13 @@ const FormularioAntecedentes = ({ datosIniciales = INITIAL_FORM_DATA, onSave, on
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Función para filtrar campos que no son editables
+  const filterFields = (fields) => {
+    return Object.entries(fields).filter(([fieldName]) => 
+      !fieldName.startsWith('id') && 
+      !['id_antecedente', 'id_historia'].includes(fieldName)
+  )}
+
   const handleInputChange = (section, field, value) => {
     const newData = {
       ...formData,
@@ -124,7 +131,7 @@ const FormularioAntecedentes = ({ datosIniciales = INITIAL_FORM_DATA, onSave, on
           onChange={(e) => handleInputChange(section, field, e.target.value)}
           className={`w-full p-2 border rounded text-sm ${isDisabled() ? 'bg-gray-100 cursor-not-allowed' : ''}`}
           rows={3}
-          placeholder={`Describa ${FIELD_LABELS[field].toLowerCase()}`}
+          placeholder={`Describa ${FIELD_LABELS[field]?.toLowerCase() || field.toLowerCase()}`}
           disabled={isDisabled()}
         />
       );
@@ -205,7 +212,7 @@ const FormularioAntecedentes = ({ datosIniciales = INITIAL_FORM_DATA, onSave, on
               {SECTION_LABELS[section]}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Object.entries(fields).map(([field, value]) => (
+              {filterFields(fields).map(([field, value]) => (
                 <div key={`${section}-${field}`} className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
                     {FIELD_LABELS[field]}
@@ -227,10 +234,10 @@ const FormularioAntecedentes = ({ datosIniciales = INITIAL_FORM_DATA, onSave, on
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
             </svg>
             <span>{datosIniciales?.id_antecedente ? 'Actualizar' : 'Guardar'}</span>
           </button>
@@ -239,5 +246,6 @@ const FormularioAntecedentes = ({ datosIniciales = INITIAL_FORM_DATA, onSave, on
     </div>
   );
 };
+
 
 export default FormularioAntecedentes;

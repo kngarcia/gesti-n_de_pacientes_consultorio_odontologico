@@ -22,7 +22,11 @@ module.exports = function(sequelize, DataTypes) {
     estado: {
       type: DataTypes.ENUM('Caries','Resinas','Ausente','Corona','Erupción','Sano','Núcleo'),
       allowNull: false
-    }
+    },
+    plan_tratamiento: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   }, {
     sequelize,
     tableName: 'EstadoDientes',
