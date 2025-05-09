@@ -19,11 +19,11 @@ const DienteSVG = ({ numero, onEstadoCambiar, estadoInicial = {} }) => {
   useEffect(() => {
     const estadoActual = JSON.stringify(estadoZonas);
     const nuevoEstado = JSON.stringify(estadoInicial);
-    
+
     if (estadoActual !== nuevoEstado) {
       setEstadoZonas(estadoInicial);
     }
-  }, [JSON.stringify(estadoInicial)]); // Usamos JSON.stringify para comparación profunda
+  }, [JSON.stringify(estadoInicial)]);
 
   const cambiarEstado = (zona) => {
     if (!onEstadoCambiar) return;
@@ -50,12 +50,14 @@ const DienteSVG = ({ numero, onEstadoCambiar, estadoInicial = {} }) => {
         {["superior", "derecha", "inferior", "izquierda"].map((zona, i) => (
           <path
             key={zona}
-            d={[
-              "M50,5 A45,45 0 0,1 95,50 L50,50 Z",
-              "M95,50 A45,45 0 0,1 50,95 L50,50 Z",
-              "M50,95 A45,45 0 0,1 5,50 L50,50 Z",
-              "M5,50 A45,45 0 0,1 50,5 L50,50 Z",
-            ][i]}
+            d={
+              [
+                "M50,5 A45,45 0 0,1 95,50 L50,50 Z",
+                "M95,50 A45,45 0 0,1 50,95 L50,50 Z",
+                "M50,95 A45,45 0 0,1 5,50 L50,50 Z",
+                "M5,50 A45,45 0 0,1 50,5 L50,50 Z",
+              ][i]
+            }
             fill={coloresPorEstado[estadoZonas[zona]] || "#fff"}
             stroke="#000"
             onClick={() => cambiarEstado(zona)}
@@ -93,7 +95,10 @@ const DienteSVG = ({ numero, onEstadoCambiar, estadoInicial = {} }) => {
                   className="p-3 rounded-lg text-white font-medium shadow-sm transition-transform hover:scale-105"
                   style={{ backgroundColor: color }}
                   onClick={() => {
-                    const nuevosEstados = { ...estadoZonas, [selectedZona]: estado };
+                    const nuevosEstados = {
+                      ...estadoZonas,
+                      [selectedZona]: estado,
+                    };
                     setEstadoZonas(nuevosEstados);
                     onEstadoCambiar(numero, nuevosEstados);
                     setShowModal(false);

@@ -5,10 +5,12 @@ import odontogramaService from "./odontogramaService";
 import axios from "axios";
 
 const dientesSuperiores = [
-  18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28,
+  18, 17, 16, 15, 14, 13, 12, 11, 55, 54, 53, 52, 51, 21, 22, 23, 24, 25, 26,
+  27, 28, 61, 62, 63, 64, 65,
 ];
 const dientesInferiores = [
-  48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38,
+  85, 84, 83, 82, 81, 48, 47, 46, 45, 44, 43, 42, 41, 71, 72, 73, 74, 75, 31,
+  32, 33, 34, 35, 36, 37, 38,
 ];
 
 const coloresPorEstado = {
@@ -28,9 +30,11 @@ const Notificacion = ({ mensaje, tipo, onCerrar }) => {
   };
 
   return (
-    <div className={`${colores[tipo]} border-l-4 p-4 fixed top-4 right-4 min-w-[300px] rounded-lg shadow-lg flex justify-between items-center z-50`}>
+    <div
+      className={`${colores[tipo]} border-l-4 p-4 fixed top-4 right-4 min-w-[300px] rounded-lg shadow-lg flex justify-between items-center z-50`}
+    >
       <span>{mensaje}</span>
-      <button 
+      <button
         onClick={onCerrar}
         className="ml-4 text-xl font-semibold hover:opacity-75"
       >
@@ -69,13 +73,16 @@ const Odontograma = () => {
   useEffect(() => {
     const cargarDatosPaciente = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:3000/api/pacientes/${patientId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (!response.ok) throw new Error('Error al obtener paciente');
-        
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `http://localhost:3000/api/pacientes/${patientId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (!response.ok) throw new Error("Error al obtener paciente");
+
         const data = await response.json();
         setPaciente(data);
       } catch (error) {
@@ -94,11 +101,31 @@ const Odontograma = () => {
         const res = await odontogramaService.obtenerOdontograma(patientId);
         if (res?.data?.dientes) {
           const agrupado = {};
+
+          const contarEstadosPorDiente = {};
+
           res.data.dientes.forEach(({ numero, estado }) => {
             if (!agrupado[numero]) agrupado[numero] = {};
-            const zona = mapearZonaDesdeEstado(estado);
-            agrupado[numero][zona] = estado;
+            if (!contarEstadosPorDiente[numero])
+              contarEstadosPorDiente[numero] = {};
+
+            contarEstadosPorDiente[numero][estado] =
+              (contarEstadosPorDiente[numero][estado] || 0) + 1;
+
+            const zonas = [
+              "superior",
+              "derecha",
+              "inferior",
+              "izquierda",
+              "centro",
+            ];
+            const zonaLibre = zonas.find((z) => !agrupado[numero][z]);
+
+            if (zonaLibre) {
+              agrupado[numero][zonaLibre] = estado;
+            }
           });
+
           setOdontograma(agrupado);
           setOdontogramaOriginal(agrupado);
           setPlanTratamiento(res.data.plan_tratamiento || "");
@@ -108,7 +135,7 @@ const Odontograma = () => {
         console.error("❌ Error al cargar odontograma:", error);
       }
     };
-    
+
     if (patientId) cargarOdontograma();
   }, [patientId]);
 
@@ -148,7 +175,7 @@ const Odontograma = () => {
           });
         }
       }
-      
+
       await odontogramaService.crearOdontograma(patientId, {
         dientes,
         plan_tratamiento: planTratamiento,
@@ -160,7 +187,6 @@ const Odontograma = () => {
       setMensajeNotificacion("✅ Odontograma guardado correctamente");
       setTipoNotificacion("exito");
       setShowNotificacion(true);
-
     } catch (error) {
       console.error("❌ Error guardando odontograma:", error);
       setMensajeNotificacion("❌ Error al guardar el odontograma");
@@ -211,14 +237,28 @@ const Odontograma = () => {
         >
           {modoEdicion ? (
             <>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
               </svg>
               Cancelar edición
             </>
           ) : (
             <>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
               </svg>
               Editar Odontograma
@@ -227,40 +267,112 @@ const Odontograma = () => {
         </button>
       </div>
 
+      {/* 🦷 Dientes Superiores */}
       <h3 className="text-lg font-semibold text-gray-600 mb-2 text-center">
         Dientes Superiores
       </h3>
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
-        {dientesSuperiores.map((num) => (
-          <DienteSVG
-            key={num}
-            numero={num}
-            estadoInicial={odontograma[num]}
-            onEstadoCambiar={modoEdicion ? manejarCambio : null}
-          />
-        ))}
+
+      <div className="flex flex-col items-center gap-2 mb-6">
+        {/* Línea 1: Superiores permanentes (con separación al centro) */}
+        <div className="flex gap-2">
+          {[18, 17, 16, 15, 14, 13, 12, 11].map((num) => (
+            <DienteSVG
+              key={num}
+              numero={num}
+              estadoInicial={odontograma[num]}
+              onEstadoCambiar={modoEdicion ? manejarCambio : null}
+            />
+          ))}
+          <div className="w-6" /> {/* Espacio visual al centro */}
+          {[21, 22, 23, 24, 25, 26, 27, 28].map((num) => (
+            <DienteSVG
+              key={num}
+              numero={num}
+              estadoInicial={odontograma[num]}
+              onEstadoCambiar={modoEdicion ? manejarCambio : null}
+            />
+          ))}
+        </div>
+
+        {/* Línea 2: Superiores temporales */}
+        <div className="flex gap-2">
+          {[55, 54, 53, 52, 51].map((num) => (
+            <DienteSVG
+              key={num}
+              numero={num}
+              estadoInicial={odontograma[num]}
+              onEstadoCambiar={modoEdicion ? manejarCambio : null}
+            />
+          ))}
+          <div className="w-6" />
+          {[61, 62, 63, 64, 65].map((num) => (
+            <DienteSVG
+              key={num}
+              numero={num}
+              estadoInicial={odontograma[num]}
+              onEstadoCambiar={modoEdicion ? manejarCambio : null}
+            />
+          ))}
+        </div>
       </div>
 
+      {/* 🦷 Dientes Inferiores */}
       <h3 className="text-lg font-semibold text-gray-600 mb-2 text-center">
         Dientes Inferiores
       </h3>
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
-        {dientesInferiores.map((num) => (
-          <DienteSVG
-            key={num}
-            numero={num}
-            estadoInicial={odontograma[num]}
-            onEstadoCambiar={modoEdicion ? manejarCambio : null}
-          />
-        ))}
+
+      <div className="flex flex-col items-center gap-2 mb-6">
+        {/* Línea 1: Inferiores permanentes + temporales izquierda */}
+        <div className="flex gap-2">
+          {[85, 84, 83, 82, 81].map((num) => (
+            <DienteSVG
+              key={num}
+              numero={num}
+              estadoInicial={odontograma[num]}
+              onEstadoCambiar={modoEdicion ? manejarCambio : null}
+            />
+          ))}
+          <div className="w-6" />
+          {[71, 72, 73, 74, 75].map((num) => (
+            <DienteSVG
+              key={num}
+              numero={num}
+              estadoInicial={odontograma[num]}
+              onEstadoCambiar={modoEdicion ? manejarCambio : null}
+            />
+          ))}
+        </div>
+
+        {/* Línea 2: Temporales inferiores derechos */}
+        <div className="flex gap-2">
+          {[48, 47, 46, 45, 44, 43, 42, 41].map((num) => (
+            <DienteSVG
+              key={num}
+              numero={num}
+              estadoInicial={odontograma[num]}
+              onEstadoCambiar={modoEdicion ? manejarCambio : null}
+            />
+          ))}
+          <div className="w-6" />
+          {[31, 32, 33, 34, 35, 36, 37, 38].map((num) => (
+            <DienteSVG
+              key={num}
+              numero={num}
+              estadoInicial={odontograma[num]}
+              onEstadoCambiar={modoEdicion ? manejarCambio : null}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="mt-8 mb-8 p-4 bg-gray-50 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-600 mb-4">Color Estados</h3>
+        <h3 className="text-lg font-semibold text-gray-600 mb-4">
+          Color Estados
+        </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {Object.entries(coloresPorEstado).map(([estado, color]) => (
             <div key={estado} className="flex items-center gap-2">
-              <div 
+              <div
                 className="w-5 h-5 rounded-sm shadow-sm border border-gray-200"
                 style={{ backgroundColor: color }}
               />
@@ -298,8 +410,13 @@ const Odontograma = () => {
             onClick={guardarOdontograma}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
             </svg>
             Guardar Odontograma
           </button>
