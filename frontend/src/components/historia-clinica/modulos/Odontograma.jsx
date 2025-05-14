@@ -59,8 +59,6 @@ const Odontograma = () => {
   const [fileRadiografia, setFileRadiografia] = useState(null);
   const [tieneRadiografia, setTieneRadiografia] = useState(false);
 
-
-
   // Subir PDF
   const uploadRadiografia = async () => {
     if (!fileRadiografia) return alert("Selecciona un PDF");
@@ -139,46 +137,46 @@ const Odontograma = () => {
   }, [patientId]);
 
   useEffect(() => {
-  const cargarOdontograma = async () => {
-    try {
-      const res = await odontogramaService.obtenerOdontograma(patientId);
-      if (res?.data) {
-        // ── Procesar dientes ───────────────────────────────────────
-        const agrupado = {};
-        const contarEstadosPorDiente = {};
+    const cargarOdontograma = async () => {
+      try {
+        const res = await odontogramaService.obtenerOdontograma(patientId);
+        if (res?.data) {
+          const agrupado = {};
+          const contarEstadosPorDiente = {};
 
-        res.data.dientes.forEach(({ numero, estado }) => {
-          if (!agrupado[numero]) agrupado[numero] = {};
-          if (!contarEstadosPorDiente[numero]) contarEstadosPorDiente[numero] = {};
+          res.data.dientes.forEach(({ numero, estado, zona }) => {
+            if (!agrupado[numero]) agrupado[numero] = {};
+            if (!contarEstadosPorDiente[numero])
+              contarEstadosPorDiente[numero] = {};
 
-          contarEstadosPorDiente[numero][estado] =
-            (contarEstadosPorDiente[numero][estado] || 0) + 1;
+            contarEstadosPorDiente[numero][estado] =
+              (contarEstadosPorDiente[numero][estado] || 0) + 1;
 
-          const zonas = ["superior", "derecha", "inferior", "izquierda", "centro"];
-          const zonaLibre = zonas.find((z) => !agrupado[numero][z]);
-          if (zonaLibre) agrupado[numero][zonaLibre] = estado;
-        });
+            if (!agrupado[numero][zona]) {
+              agrupado[numero][zona] = estado;
+            } else {
+              console.warn(
+                `Zona duplicada para diente ${numero}, zona ${zona}`
+              );
+            }
+          });
 
-        setOdontograma(agrupado);
-        setOdontogramaOriginal(agrupado);
+          setOdontograma(agrupado);
+          setOdontogramaOriginal(agrupado);
 
-        // ── Plan de tratamiento ────────────────────────────────────
-        setPlanTratamiento(res.data.plan_tratamiento || "");
-        setPlanTratamientoOriginal(res.data.plan_tratamiento || "");
-
-        // ── Bandera de radiografía ─────────────────────────────────
-        setTieneRadiografia(!!res.data.tieneRadiografia);
+          setPlanTratamiento(res.data.plan_tratamiento || "");
+          setPlanTratamientoOriginal(res.data.plan_tratamiento || "");
+          setTieneRadiografia(!!res.data.tieneRadiografia);
+        }
+      } catch (error) {
+        console.error("❌ Error al cargar odontograma:", error);
       }
-    } catch (error) {
-      console.error("❌ Error al cargar odontograma:", error);
+    };
+
+    if (patientId) {
+      cargarOdontograma();
     }
-  };
-
-  if (patientId) {
-    cargarOdontograma();
-  }
-}, [patientId]);
-
+  }, [patientId]);
 
   useEffect(() => {
     if (showNotificacion) {
@@ -213,6 +211,7 @@ const Odontograma = () => {
           dientes.push({
             numero: parseInt(numero),
             estado: zonas[zona],
+            zona,
           });
         }
       }
@@ -445,23 +444,23 @@ const Odontograma = () => {
         )}
       </div>
       {modoEdicion && (
-      <div className="mt-4">
-        <label className="block mb-2 font-medium">
-          Subir radiografía (PDF)
-        </label>
-        <input 
-          type="file" 
-          accept="application/pdf" 
-          onChange={e => setFileRadiografia(e.target.files[0])} 
-        />
-        <button
-          onClick={uploadRadiografia}  
-          className="ml-2 px-4 py-2 bg-green-600 text-white rounded"
-        >
-          Subir
-        </button>
-      </div>
-    )}
+        <div className="mt-4">
+          <label className="block mb-2 font-medium">
+            Subir radiografía (PDF)
+          </label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => setFileRadiografia(e.target.files[0])}
+          />
+          <button
+            onClick={uploadRadiografia}
+            className="ml-2 px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Subir
+          </button>
+        </div>
+      )}
       {modoEdicion && (
         <div className="flex justify-end mt-6">
           <button
@@ -481,21 +480,20 @@ const Odontograma = () => {
         </div>
       )}
       {/* Descarga: siempre visible, activado solo si hay PDF */}
-    <div className="mt-4">
-      <button
-        onClick={downloadRadiografia}
-        disabled={!tieneRadiografia}
-        className={`px-4 py-2 rounded text-white ${
-          tieneRadiografia
-            ? "bg-blue-600 hover:bg-blue-700"
-            : "bg-gray-400 cursor-not-allowed"
-        }`}
-      >
-        {tieneRadiografia ? "Ver Radiografía" : "No hay radiografía"}
-      </button>
+      <div className="mt-4">
+        <button
+          onClick={downloadRadiografia}
+          disabled={!tieneRadiografia}
+          className={`px-4 py-2 rounded text-white ${
+            tieneRadiografia
+              ? "bg-blue-600 hover:bg-blue-700"
+              : "bg-gray-400 cursor-not-allowed"
+          }`}
+        >
+          {tieneRadiografia ? "Ver Radiografía" : "No hay radiografía"}
+        </button>
+      </div>
     </div>
-    </div>
-    
   );
 };
 

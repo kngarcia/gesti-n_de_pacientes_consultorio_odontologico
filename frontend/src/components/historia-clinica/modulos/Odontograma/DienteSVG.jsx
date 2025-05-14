@@ -13,26 +13,29 @@ const coloresPorEstado = {
 const DienteSVG = ({ numero, onEstadoCambiar, estadoInicial = {} }) => {
   const [estadoZonas, setEstadoZonas] = useState(estadoInicial);
   const [showModal, setShowModal] = useState(false);
-  const [selectedZona, setSelectedZona] = useState(null);
+  const [zonaSeleccionada, setZonaSeleccionada] = useState(null);
 
-  // Efecto seguro para sincronización
   useEffect(() => {
-    const estadoActual = JSON.stringify(estadoZonas);
-    const nuevoEstado = JSON.stringify(estadoInicial);
-
-    if (estadoActual !== nuevoEstado) {
-      setEstadoZonas(estadoInicial);
-    }
+    setEstadoZonas(estadoInicial);
   }, [JSON.stringify(estadoInicial)]);
 
   const cambiarEstado = (zona) => {
-    if (!onEstadoCambiar) return;
-    setSelectedZona(zona);
+    setZonaSeleccionada(zona);
     setShowModal(true);
   };
 
   const handleCancelar = () => {
     setEstadoZonas(estadoInicial);
+    setShowModal(false);
+  };
+
+  const aplicarEstado = (zona, estado) => {
+    const nuevosEstados = {
+      ...estadoZonas,
+      [zona]: estado,
+    };
+    setEstadoZonas(nuevosEstados);
+    onEstadoCambiar(numero, nuevosEstados);
     setShowModal(false);
   };
 
@@ -76,7 +79,7 @@ const DienteSVG = ({ numero, onEstadoCambiar, estadoInicial = {} }) => {
         </text>
       </svg>
 
-      {showModal && (
+      {showModal && zonaSeleccionada && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           onClick={() => setShowModal(false)}
@@ -86,7 +89,7 @@ const DienteSVG = ({ numero, onEstadoCambiar, estadoInicial = {} }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-xl font-semibold mb-4">
-              Diente {numero} - Zona {selectedZona}
+              Diente {numero} - Zona {zonaSeleccionada}
             </h3>
             <div className="grid grid-cols-2 gap-3">
               {Object.entries(coloresPorEstado).map(([estado, color]) => (
@@ -94,15 +97,7 @@ const DienteSVG = ({ numero, onEstadoCambiar, estadoInicial = {} }) => {
                   key={estado}
                   className="p-3 rounded-lg text-white font-medium shadow-sm transition-transform hover:scale-105"
                   style={{ backgroundColor: color }}
-                  onClick={() => {
-                    const nuevosEstados = {
-                      ...estadoZonas,
-                      [selectedZona]: estado,
-                    };
-                    setEstadoZonas(nuevosEstados);
-                    onEstadoCambiar(numero, nuevosEstados);
-                    setShowModal(false);
-                  }}
+                  onClick={() => aplicarEstado(zonaSeleccionada, estado)}
                 >
                   {estado}
                 </button>
