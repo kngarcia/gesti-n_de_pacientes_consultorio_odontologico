@@ -27,6 +27,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    radiografia: {
+        type: DataTypes.BLOB('medium'),
+        allowNull: true,
+      },
   }, {
     sequelize,
     tableName: 'EstadoDientes',

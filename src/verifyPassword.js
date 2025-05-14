@@ -1,8 +1,8 @@
 const bcrypt = require("bcrypt");
 
-const passwordIngresada = "Jvaldes_2303"; // Contraseña que envías en el login
+const passwordIngresada = "unicornio"; // Contraseña que envías en el login
 const passwordEnBD =
-  "$2b$10$ptcNRfKhcb6W7ej3nLx9Dut04kcHi7AkDjyhhOvYxnOKE0Gw92ktm"; // Contraseña en la BD
+  "$2b$10$0BorvX50uk9w7KebLF6Bs.yrmJGXX1NsSF2UN/GAQeP/KmwNo.dBW"; // Contraseña en la BD
 
 bcrypt.compare(passwordIngresada, passwordEnBD).then((result) => {
   console.log("¿Contraseña válida?", result);

@@ -56,6 +56,49 @@ const Odontograma = () => {
   const [mensajeNotificacion, setMensajeNotificacion] = useState("");
   const [tipoNotificacion, setTipoNotificacion] = useState("exito");
   const [cargandoPaciente, setCargandoPaciente] = useState(true);
+  const [fileRadiografia, setFileRadiografia] = useState(null);
+  const [tieneRadiografia, setTieneRadiografia] = useState(false);
+
+
+
+  // Subir PDF
+  const uploadRadiografia = async () => {
+    if (!fileRadiografia) return alert("Selecciona un PDF");
+    try {
+      const formData = new FormData();
+      formData.append("radiografia", fileRadiografia);
+      await axios.post(
+        `http://localhost:3000/api/odontograma/paciente/${patientId}/radiografia`,
+        formData
+      );
+      setTieneRadiografia(true);
+      setMensajeNotificacion("✅ Radiografía subida correctamente");
+      setTipoNotificacion("exito");
+      setShowNotificacion(true);
+    } catch (err) {
+      console.error(err);
+      setMensajeNotificacion("❌ Error al subir radiografía");
+      setTipoNotificacion("error");
+      setShowNotificacion(true);
+    }
+  };
+
+  // Abrir PDF en nueva pestaña
+  const downloadRadiografia = async () => {
+    if (!tieneRadiografia) return alert("No hay radiografía para mostrar");
+    try {
+      const resp = await axios.get(
+        `http://localhost:3000/api/odontograma/paciente/${patientId}/radiografia`,
+        { responseType: "blob" }
+      );
+      const url = URL.createObjectURL(resp.data);
+      window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    } catch (err) {
+      console.error("Error descargando radiografía:", err);
+      alert("Error al descargar.");
+    }
+  };
 
   const mapearZonaDesdeEstado = (estado) => {
     const zonas = {
@@ -96,48 +139,46 @@ const Odontograma = () => {
   }, [patientId]);
 
   useEffect(() => {
-    const cargarOdontograma = async () => {
-      try {
-        const res = await odontogramaService.obtenerOdontograma(patientId);
-        if (res?.data?.dientes) {
-          const agrupado = {};
+  const cargarOdontograma = async () => {
+    try {
+      const res = await odontogramaService.obtenerOdontograma(patientId);
+      if (res?.data) {
+        // ── Procesar dientes ───────────────────────────────────────
+        const agrupado = {};
+        const contarEstadosPorDiente = {};
 
-          const contarEstadosPorDiente = {};
+        res.data.dientes.forEach(({ numero, estado }) => {
+          if (!agrupado[numero]) agrupado[numero] = {};
+          if (!contarEstadosPorDiente[numero]) contarEstadosPorDiente[numero] = {};
 
-          res.data.dientes.forEach(({ numero, estado }) => {
-            if (!agrupado[numero]) agrupado[numero] = {};
-            if (!contarEstadosPorDiente[numero])
-              contarEstadosPorDiente[numero] = {};
+          contarEstadosPorDiente[numero][estado] =
+            (contarEstadosPorDiente[numero][estado] || 0) + 1;
 
-            contarEstadosPorDiente[numero][estado] =
-              (contarEstadosPorDiente[numero][estado] || 0) + 1;
+          const zonas = ["superior", "derecha", "inferior", "izquierda", "centro"];
+          const zonaLibre = zonas.find((z) => !agrupado[numero][z]);
+          if (zonaLibre) agrupado[numero][zonaLibre] = estado;
+        });
 
-            const zonas = [
-              "superior",
-              "derecha",
-              "inferior",
-              "izquierda",
-              "centro",
-            ];
-            const zonaLibre = zonas.find((z) => !agrupado[numero][z]);
+        setOdontograma(agrupado);
+        setOdontogramaOriginal(agrupado);
 
-            if (zonaLibre) {
-              agrupado[numero][zonaLibre] = estado;
-            }
-          });
+        // ── Plan de tratamiento ────────────────────────────────────
+        setPlanTratamiento(res.data.plan_tratamiento || "");
+        setPlanTratamientoOriginal(res.data.plan_tratamiento || "");
 
-          setOdontograma(agrupado);
-          setOdontogramaOriginal(agrupado);
-          setPlanTratamiento(res.data.plan_tratamiento || "");
-          setPlanTratamientoOriginal(res.data.plan_tratamiento || "");
-        }
-      } catch (error) {
-        console.error("❌ Error al cargar odontograma:", error);
+        // ── Bandera de radiografía ─────────────────────────────────
+        setTieneRadiografia(!!res.data.tieneRadiografia);
       }
-    };
+    } catch (error) {
+      console.error("❌ Error al cargar odontograma:", error);
+    }
+  };
 
-    if (patientId) cargarOdontograma();
-  }, [patientId]);
+  if (patientId) {
+    cargarOdontograma();
+  }
+}, [patientId]);
+
 
   useEffect(() => {
     if (showNotificacion) {
@@ -403,7 +444,24 @@ const Odontograma = () => {
           </div>
         )}
       </div>
-
+      {modoEdicion && (
+      <div className="mt-4">
+        <label className="block mb-2 font-medium">
+          Subir radiografía (PDF)
+        </label>
+        <input 
+          type="file" 
+          accept="application/pdf" 
+          onChange={e => setFileRadiografia(e.target.files[0])} 
+        />
+        <button
+          onClick={uploadRadiografia}  
+          className="ml-2 px-4 py-2 bg-green-600 text-white rounded"
+        >
+          Subir
+        </button>
+      </div>
+    )}
       {modoEdicion && (
         <div className="flex justify-end mt-6">
           <button
@@ -422,7 +480,22 @@ const Odontograma = () => {
           </button>
         </div>
       )}
+      {/* Descarga: siempre visible, activado solo si hay PDF */}
+    <div className="mt-4">
+      <button
+        onClick={downloadRadiografia}
+        disabled={!tieneRadiografia}
+        className={`px-4 py-2 rounded text-white ${
+          tieneRadiografia
+            ? "bg-blue-600 hover:bg-blue-700"
+            : "bg-gray-400 cursor-not-allowed"
+        }`}
+      >
+        {tieneRadiografia ? "Ver Radiografía" : "No hay radiografía"}
+      </button>
     </div>
+    </div>
+    
   );
 };
 

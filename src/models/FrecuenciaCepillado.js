@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: "0"
     },
     ultima_visita_odontologo: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.TEXT,
       allowNull: true
     },
     observaciones: {

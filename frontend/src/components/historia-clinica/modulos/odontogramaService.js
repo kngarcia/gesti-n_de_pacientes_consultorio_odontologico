@@ -9,5 +9,15 @@ export const odontogramaService = {
   obtenerOdontograma: (patientId) =>
     axios.get(`${API_URL}/paciente/${patientId}`),
 };
+// odontogramaService.js
+export async function crearOdontograma(patientId, payload) {
+  const res = await axios.post(
+    `http://localhost:3000/api/odontograma/paciente/${patientId}`,
+    payload
+  );
+  // Ahora el back responde { mensaje, idExamenClinico }
+  return res.data; 
+}
+
 
 export default odontogramaService;
